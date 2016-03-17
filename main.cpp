@@ -10,21 +10,31 @@
 #include <time.h>
 /*---------------------------*/
 #include <fstream>
+#include <ctime>
 
 
 
-int main()
+int main(int argc, char* argv[])
 {
     // Create the main window and camera
     sf::RenderWindow app(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Gen that Land"/*, sf::Style::Fullscreen*/);
 
     sf::View camera;
-    camera.setSize(8888, 5000);
-    camera.setCenter(2250, 1750);
+    camera.setSize(100000, 56250);
+    camera.setCenter(10000, 10000);
     app.setView(camera);
 
     // Generate the grid
-    std::vector<hexagon> hexs = genGrid();
+        // Setup timer
+        std::clock_t start;
+        double duration;
+        start = std::clock();
+
+    std::vector<hexagon> hexs = genGrid(atoi(argv[1]));
+
+        duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+    std::cout << "Generation Time: "<< duration << "s" << std::endl;
+
 
     // Game loop
     while (app.isOpen())

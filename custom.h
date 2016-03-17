@@ -9,10 +9,11 @@ class hexagon : public sf::CircleShape
     public:
         int x;
         int y;
+        int index;
         Terrain terrain;
         sf::CircleShape hex;
         hexagon(int x, int y);
-        std::vector<hexagon> adjacentTiles(std::vector<hexagon> &hexs);
+        std::vector<hexagon*> adjacentTiles(std::vector<hexagon> &hexs, int vectorSize);
         int adjacentLand(std::vector<hexagon> &hexs);
         int adjacentSand(std::vector<hexagon> &hexs);
         int adjacentSea(std::vector<hexagon> &hexs);
@@ -23,7 +24,7 @@ class hexagon : public sf::CircleShape
 };
 
 void update_view(sf::RenderWindow &app, sf::View &camera, std::vector<hexagon> hexs);
-std::vector<hexagon> genGrid();
+std::vector<hexagon> genGrid(int gridSize);
 
 
 #endif // CUSTOM_H_INCLUDED

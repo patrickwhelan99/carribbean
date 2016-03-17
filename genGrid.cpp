@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <iostream>
 
-std::vector<hexagon> genGrid()
+std::vector<hexagon> genGrid(int gridSize)
 {
 
 /*******************************************Config Values****************************************************************/
@@ -14,8 +14,9 @@ std::vector<hexagon> genGrid()
 /********************************************Generating hex grid*********************************************************/
     std::vector<hexagon> hexs;
     int jumpCounter = 0;
+    int index = 0;
 
-    for (int n = 0; n<100; n++)
+    for (int n = 0; n<gridSize; n++)
         {
 
         if((n % 2) == 0)
@@ -23,7 +24,7 @@ std::vector<hexagon> genGrid()
             jumpCounter++;
         }
 
-        for (int i = 0; i<100; i++)
+        for (int i = 0; i<gridSize; i++)
             {
                 hexagon hexagon(25, 6);
                 if((n % 2) == 0) // every other y
@@ -36,7 +37,10 @@ std::vector<hexagon> genGrid()
 */
                 hexagon.x = i + jumpCounter;
                 hexagon.y = n;
+                hexagon.index = index;
                 hexs.push_back(hexagon);
+
+                index++;
             }
         }
 /************************************************************************************************************************/
@@ -49,9 +53,9 @@ std::vector<hexagon> genGrid()
         {
             int tempLandChance = landChance;
 
-                for(auto &adjacent : tile.adjacentTiles(hexs))
+                for(auto &adjacent : tile.adjacentTiles(hexs, gridSize))
 
-                    if (adjacent.terrain == land)
+                    if (adjacent->terrain == land)
                     {
                         tempLandChance += 20;
                     }
@@ -79,9 +83,9 @@ std::vector<hexagon> genGrid()
                 int adjTown = 0;
                 int adjLake = 0;
 
-                for (auto &adjTile : tile.adjacentTiles(hexs))
+                for (auto &adjTile : tile.adjacentTiles(hexs, gridSize))
                 {
-                    switch (adjTile.terrain)
+                    switch (adjTile->terrain)
                     {
                         case sea:
                             adjSea++;
@@ -108,7 +112,6 @@ std::vector<hexagon> genGrid()
                     }
                 }
 
-                //printf("Adjacent Sea: %i\nAdjacent Land: %i\nAdjacent Sand: %i\nAdjacent Town: %i\nAdjacent Lake: %i\n", adjSea, adjLand, adjSand, adjTown, adjLake);
 
                 if(tile.terrain != land && adjLand > 1 && randNum <= 65)    //Gen Sand
                     {
@@ -116,7 +119,6 @@ std::vector<hexagon> genGrid()
                         {
                             tile.terrain = land;
                             tile.hex.setFillColor(sf::Color::Green);
-                            //std::cout << "Sand -> Land" << std::endl;
                         }
                         else // Make SAND BABIES
                         {
@@ -147,9 +149,9 @@ std::vector<hexagon> genGrid()
                 int adjTown = 0;
                 int adjLake = 0;
 
-                for (auto &adjTile : tile.adjacentTiles(hexs))
+                for (auto &adjTile : tile.adjacentTiles(hexs, gridSize))
                 {
-                    switch (adjTile.terrain)
+                    switch (adjTile->terrain)
                     {
                         case sea:
                             adjSea++;

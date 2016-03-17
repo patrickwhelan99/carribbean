@@ -1,4 +1,5 @@
 #include "custom.h"
+#include <iostream>
 
 hexagon::hexagon(int x, int y)
 {
@@ -7,6 +8,74 @@ hexagon::hexagon(int x, int y)
     this->terrain = sea;
 }
 
+std::vector<hexagon*> hexagon::adjacentTiles(std::vector<hexagon> &hexs, int gridSize)
+{
+    std::vector<hexagon*> adjHexs;
+    int vectorSize = gridSize*gridSize;
+
+    int ting = index - (gridSize+1); //-x,-y TL
+    if((this->y % 2) == 0)
+    {
+        ting++;
+    }
+    if(!(ting < 0))
+    {
+        adjHexs.push_back(&hexs.at(ting));
+    }
+
+
+    ting = index - gridSize; // x, -y TR
+    if((this->y % 2) == 0)
+    {
+        ting++;
+    }
+    if(!(ting < 0))
+    {
+        adjHexs.push_back(&hexs.at(ting));
+    }
+
+
+    ting = index - 1; // -x, y L
+    if(!(ting < 0))
+    {
+        adjHexs.push_back(&hexs.at(ting));
+    }
+
+
+/********************************************************/
+
+
+    ting = index + 1; // +x, y R
+    if(!(ting >= vectorSize))
+    {
+        adjHexs.push_back(&hexs.at(ting));
+    }
+
+    ting = index + (gridSize-1); // x, +y BL
+    if((this->y % 2) == 0)
+    {
+        ting++;
+    }
+    if(!(ting >= vectorSize))
+    {
+        adjHexs.push_back(&hexs.at(ting));
+    }
+
+    ting = index + gridSize; // +x, +y BR
+    if((this->y % 2) == 0)
+    {
+        ting++;
+    }
+    if(!(ting >= vectorSize))
+    {
+        adjHexs.push_back(&hexs.at(ting));
+    }
+
+
+    return adjHexs;
+}
+
+/*
 std::vector<hexagon> hexagon::adjacentTiles(std::vector<hexagon> &hexs)
 {
     std::vector<hexagon> adjHexs;
@@ -20,3 +89,4 @@ std::vector<hexagon> hexagon::adjacentTiles(std::vector<hexagon> &hexs)
 
     return adjHexs;
 }
+*/
