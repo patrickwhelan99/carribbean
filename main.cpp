@@ -18,10 +18,16 @@ int main(int argc, char* argv[])
 {
     // Create the main window and camera
     sf::RenderWindow app(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Gen that Land"/*, sf::Style::Fullscreen*/);
+    int gridSize;
+
+    if(argc > 1)
+        gridSize = atoi(argv[1]);
+    else
+        gridSize = 100;
 
     sf::View camera;
-    camera.setSize(100000, 56250);
-    camera.setCenter(10000, 10000);
+    camera.setSize(sf::VideoMode::getDesktopMode().width*(gridSize/48), sf::VideoMode::getDesktopMode().height*(gridSize/48));
+    camera.setCenter(0, 0);
     app.setView(camera);
 
     // Generate the grid
@@ -30,10 +36,11 @@ int main(int argc, char* argv[])
         double duration;
         start = std::clock();
 
-    std::vector<hexagon> hexs = genGrid(atoi(argv[1]));
+    std::vector<hexagon> hexs = genGrid(gridSize, camera);
 
         duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
     std::cout << "Generation Time: "<< duration << "s" << std::endl;
+
 
 
     // Game loop
