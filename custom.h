@@ -3,7 +3,6 @@
 #include <SFML/Graphics.hpp>
 
 enum Terrain {sea, land, mountain, sand, jungle, town, lake};
-enum Resource {none, fish, coca, wheat, cattle, tobacco, cotton};
 
 class hexagon : public sf::CircleShape
 {
@@ -12,10 +11,7 @@ class hexagon : public sf::CircleShape
         int y;
         int index;
         Terrain terrain;
-        Resource resource;
         sf::CircleShape hex;
-        sf::CircleShape resourceIcon;
-
         hexagon(int x, int y);
         std::vector<hexagon*> adjacentTiles(std::vector<hexagon> &hexs, int vectorSize);
         int adjacentLand(std::vector<hexagon> &hexs);
@@ -28,7 +24,7 @@ class hexagon : public sf::CircleShape
 };
 
 void update_view(sf::RenderWindow &app, sf::View &camera, std::vector<hexagon> hexs);
-std::vector<hexagon> genGrid(int gridSize, sf::View &camera);
+std::vector<hexagon> genGrid(int gridSize);
 
 
 #endif // CUSTOM_H_INCLUDED

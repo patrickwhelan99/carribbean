@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <iostream>
 
-std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
+std::vector<hexagon> genGrid(int gridSize)
 {
 
 /*******************************************Config Values****************************************************************/
@@ -9,13 +9,6 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
     int landChance = 5;
     int mountainChance = 10;
     int townChance = 2;
-
-    int cocaChance = 70;
-    int cattleChance = 5;
-    int fishChance = 2;
-    int wheatChance = 10;
-    int tobaccoChance = 5;
-    int cottonChance = 2;
 
 /************************************************************************************************************************/
 /********************************************Generating hex grid*********************************************************/
@@ -38,18 +31,14 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
                     hexagon.hex.setPosition(i*43.75 + 43.75*0.5, n*38);
                 else
                     hexagon.hex.setPosition(i*43.75, n*38); // 43.75 is 25*1.75     |   40 is 25*1.6
-
-                hexagon.resourceIcon.setPosition(hexagon.hex.getPosition().x + 10, hexagon.hex.getPosition().y + 10);
+/*
+                hexagon.terrain = sea;
+                hexagon.setFillColor(sf::Color::Blue);
+*/
                 hexagon.x = i + jumpCounter;
                 hexagon.y = n;
                 hexagon.index = index;
                 hexs.push_back(hexagon);
-
-                if((i == gridSize/2) && (n == gridSize/2))
-                {
-                    camera.setCenter(hexagon.hex.getPosition());
-                    std::cout << hexagon.hex.getPosition().x << "," << hexagon.hex.getPosition().y << std::endl;
-                }
 
                 index++;
             }
@@ -223,92 +212,6 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
                         tile.hex.setFillColor(sf::Color(0, 200, 255));
                     }
                 }
-
-/************************************************************************************************************************/
-
-/********************************************Place Resources*************************************************************/
-            for (auto &tile : hexs)
-            {
-
-
-                int adjSea = 0;
-                int adjLand = 0;
-                int adjSand = 0;
-                int adjTown = 0;
-                int adjLake = 0;
-
-                for (auto &adjTile : tile.adjacentTiles(hexs, gridSize))
-                {
-                    switch (adjTile->terrain)
-                    {
-                        case sea:
-                            adjSea++;
-                            break;
-
-                        case land:
-                            adjLand++;
-                            break;
-
-                        case sand:
-                            adjSand++;
-                            break;
-
-                        case town:
-                            adjTown++;
-                            break;
-
-                        case lake:
-                            adjLake++;
-                            break;
-
-                        default:
-                            break;
-                    }
-
-                }
-
-                 int randNum = rand() % 100 + 1;
-
-                 if(tile.terrain == jungle && randNum <= cocaChance)
-                 {
-                    tile.resource = coca;
-                    tile.resourceIcon.setFillColor(sf::Color::Red);
-                 }
-
-                    randNum = rand() % 100 + 1;
-                 if(tile.terrain == land && randNum <= wheatChance)
-                 {
-                    tile.resource = wheat;
-                    tile.resourceIcon.setFillColor(sf::Color::Red);
-                 }
-
-                    randNum = rand() % 100 + 1;
-                 if(tile.terrain == land && randNum <= cattleChance)
-                 {
-                    tile.resource = cattle;
-                    tile.resourceIcon.setFillColor(sf::Color::Red);
-                 }
-                    randNum = rand() % 100 + 1;
-                 if(tile.terrain == land && randNum <= tobaccoChance)
-                 {
-                    tile.resource = tobacco;
-                    tile.resourceIcon.setFillColor(sf::Color::Red);
-                 }
-                    randNum = rand() % 100 + 1;
-                 if(tile.terrain == land && randNum <= cottonChance)
-                 {
-                    tile.resource = cotton;
-                    tile.resourceIcon.setFillColor(sf::Color::Red);
-                 }
-                    randNum = rand() % 100 + 1;
-                 if(tile.terrain == sea && randNum <= fishChance)
-                 {
-                    tile.resource = fish;
-                    tile.resourceIcon.setFillColor(sf::Color::Red);
-                 }
-            }
-
-
 
 /************************************************************************************************************************/
 

@@ -6,9 +6,6 @@ hexagon::hexagon(int x, int y)
     this->hex = sf::CircleShape(25, 6);
     this->hex.setFillColor(sf::Color::Blue);
     this->terrain = sea;
-    this->resource = none;
-
-    this->resourceIcon = sf::CircleShape(15, 6);
 }
 
 std::vector<hexagon*> hexagon::adjacentTiles(std::vector<hexagon> &hexs, int gridSize)
