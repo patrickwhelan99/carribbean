@@ -1,12 +1,13 @@
 #include "custom.h"
 #include <iostream>
 
-std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
+std::vector<hexagon> genGrid(int gridSize, sf::View &camera, sf::Texture &cocaTexture, sf::Texture &wheatTexture, sf::Texture &fishTexture, sf::Texture &cattleTexture, sf::Texture &tobaccoTexture, sf::Texture &cottonTexture, sf::Texture &horsesTexture, sf::Texture &metalsTexture)
 {
 
 /*******************************************Config Values****************************************************************/
-    float jungleChance = 40;
+    int jungleChance = 40;
     int landChance = 5;
+    int sandChance = 65;
     int mountainChance = 10;
     int townChance = 2;
 
@@ -17,7 +18,11 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
     int tobaccoChance = 5;
     int cottonChance = 2;
 
+    int horsesChance = 5;
+    int metalsChance = 3;
+
 /************************************************************************************************************************/
+
 /********************************************Generating hex grid*********************************************************/
     std::vector<hexagon> hexs;
     int jumpCounter = 0;
@@ -35,11 +40,12 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
             {
                 hexagon hexagon(25, 6);
                 if((n % 2) == 0) // every other y
-                    hexagon.hex.setPosition(i*43.75 + 43.75*0.5, n*38);
+                    hexagon.hex.setPosition(i*43.75*200 + 43.75*0.5*200, n*38*200);
                 else
-                    hexagon.hex.setPosition(i*43.75, n*38); // 43.75 is 25*1.75     |   40 is 25*1.6
+                    hexagon.hex.setPosition(i*43.75*200, n*38*200); // 43.75 is 25*1.75     |   40 is 25*1.6
 
-                hexagon.resourceIcon.setPosition(hexagon.hex.getPosition().x + 10, hexagon.hex.getPosition().y + 10);
+                hexagon.resourceIcon.setPosition(hexagon.hex.getPosition().x + 10*200, hexagon.hex.getPosition().y + 10*200);
+                hexagon.ownerHex.setPosition(hexagon.hex.getPosition().x, hexagon.hex.getPosition().y);
                 hexagon.x = i + jumpCounter;
                 hexagon.y = n;
                 hexagon.index = index;
@@ -124,7 +130,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
                 }
 
 
-                if(tile.terrain != land && adjLand > 1 && randNum <= 65)    //Gen Sand
+                if(tile.terrain != land && adjLand > 1 && randNum <= sandChance)    //Gen Sand
                     {
                         if (adjSand > 1)    //if sand > 1 thick; then Sand -> Land
                         {
@@ -205,6 +211,11 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
                     {
                         tile.terrain = town;
                         tile.hex.setFillColor(sf::Color::White);
+                        randNum = rand() % 100 + 1;
+                        if (randNum < 25) {tile.ownerHex.setFillColor(sf::Color(255, 0, 50, 128));    tile.owner = england;}; // England
+                        if (24 < randNum && randNum < 49) {tile.ownerHex.setFillColor(sf::Color(255, 255, 50, 128));    tile.owner = portugal;}; // Portugal
+                        if (50 < randNum && randNum < 74) {tile.ownerHex.setFillColor(sf::Color(0, 255, 255, 128));    tile.owner = france;}; // France
+                        if (75 < randNum && randNum < 101) {tile.ownerHex.setFillColor(sf::Color(255, 255, 50, 128));    tile.owner = spain;}; // Spain
                     }
 
                     randNum = rand() % 100 + 1;
@@ -272,39 +283,51 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
                  if(tile.terrain == jungle && randNum <= cocaChance)
                  {
                     tile.resource = coca;
-                    tile.resourceIcon.setFillColor(sf::Color::Red);
+                    tile.resourceIcon.setTexture(&cocaTexture);
                  }
 
                     randNum = rand() % 100 + 1;
                  if(tile.terrain == land && randNum <= wheatChance)
                  {
                     tile.resource = wheat;
-                    tile.resourceIcon.setFillColor(sf::Color::Red);
+                    tile.resourceIcon.setTexture(&wheatTexture);
                  }
 
                     randNum = rand() % 100 + 1;
                  if(tile.terrain == land && randNum <= cattleChance)
                  {
                     tile.resource = cattle;
-                    tile.resourceIcon.setFillColor(sf::Color::Red);
+                    tile.resourceIcon.setTexture(&cattleTexture);
                  }
                     randNum = rand() % 100 + 1;
                  if(tile.terrain == land && randNum <= tobaccoChance)
                  {
                     tile.resource = tobacco;
-                    tile.resourceIcon.setFillColor(sf::Color::Red);
+                    tile.resourceIcon.setTexture(&tobaccoTexture);
                  }
                     randNum = rand() % 100 + 1;
                  if(tile.terrain == land && randNum <= cottonChance)
                  {
                     tile.resource = cotton;
-                    tile.resourceIcon.setFillColor(sf::Color::Red);
+                    tile.resourceIcon.setTexture(&cottonTexture);
                  }
                     randNum = rand() % 100 + 1;
                  if(tile.terrain == sea && randNum <= fishChance)
                  {
                     tile.resource = fish;
-                    tile.resourceIcon.setFillColor(sf::Color::Red);
+                    tile.resourceIcon.setTexture(&fishTexture);
+                 }
+                    randNum = rand() % 100 + 1;
+                 if(tile.terrain == land && randNum <= horsesChance)
+                 {
+                    tile.resource = horses;
+                    tile.resourceIcon.setTexture(&horsesTexture);
+                 }
+                    randNum = rand() % 100 + 1;
+                 if(tile.terrain == land && randNum <= metalsChance)
+                 {
+                    tile.resource = metals;
+                    tile.resourceIcon.setTexture(&metalsTexture);
                  }
             }
 
@@ -318,8 +341,15 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
         int sandCountWhole = 0;
         int jungleCountWhole = 0;
         int mountainCountWhole = 0;
-        int townCountWhole = 0;
         int lakeCountWhole = 0;
+        int horsesCountWhole = 0;
+        int metalsCountWhole = 0;
+
+        int townCountWhole = 0;
+        int englandCountWhole = 0;
+        int spainCountWhole = 0;
+        int franceCountWhole = 0;
+        int portugalCountWhole = 0;
         int total = 0;
                 for (auto &tile : hexs)
                 {
@@ -343,13 +373,37 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
                     {
                         mountainCountWhole ++;
                     }
+                    if(tile.terrain == lake)
+                    {
+                        lakeCountWhole ++;
+                    }
+                    if(tile.terrain == horses)
+                    {
+                        horsesCountWhole ++;
+                    }
+                    if(tile.terrain == metals)
+                    {
+                        metalsCountWhole ++;
+                    }
                     if(tile.terrain == town)
                     {
                         townCountWhole ++;
                     }
-                    if(tile.terrain == lake)
+                    if(tile.owner == england)
                     {
-                        lakeCountWhole ++;
+                        englandCountWhole ++;
+                    }
+                    if(tile.owner == france)
+                    {
+                        franceCountWhole ++;
+                    }
+                    if(tile.owner == portugal)
+                    {
+                        portugalCountWhole ++;
+                    }
+                    if(tile.owner == spain)
+                    {
+                        spainCountWhole ++;
                     }
 
                     total++;
@@ -359,7 +413,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera)
 
 
 
-printf("Tiles: %i\nSeaTiles: %i\nLandTiles: %i\nBeaches: %i\nJungles: %i\nMountains: %i\nTowns: %i\nLakes: %i\n", total, seaCountWhole, landCountWhole, sandCountWhole, jungleCountWhole, mountainCountWhole, townCountWhole, lakeCountWhole);
+printf("Tiles: %i\nSeaTiles: %i\nLandTiles: %i\nBeaches: %i\nJungles: %i\nMountains: %i\nLakes: %i\nHorses: %i\nMetals: %i\n\n\nTowns: %i\nEnglish: %i\nFrench: %i\nPortuguese: %i\nSpanish: %i\n", total, seaCountWhole, landCountWhole, sandCountWhole, jungleCountWhole, mountainCountWhole, lakeCountWhole, horsesCountWhole, metalsCountWhole, townCountWhole, englandCountWhole, franceCountWhole, portugalCountWhole, spainCountWhole);
 
 
 

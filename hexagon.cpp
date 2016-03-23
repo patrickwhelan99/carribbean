@@ -3,12 +3,14 @@
 
 hexagon::hexagon(int x, int y)
 {
-    this->hex = sf::CircleShape(25, 6);
+    this->hex = sf::CircleShape(25*200, 6);
     this->hex.setFillColor(sf::Color::Blue);
-    this->terrain = sea;
+    this->ownerHex = sf::CircleShape(25*200, 6);
+    this->ownerHex.setFillColor(sf::Color(255, 255, 255));
     this->resource = none;
-
-    this->resourceIcon = sf::CircleShape(15, 6);
+    this->terrain = sea;
+    this->owner = noOne;
+    this->resourceIcon = sf::CircleShape(15*200, 6);
 }
 
 std::vector<hexagon*> hexagon::adjacentTiles(std::vector<hexagon> &hexs, int gridSize)

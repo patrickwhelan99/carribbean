@@ -1,18 +1,20 @@
 #include "custom.h"
+#include <iostream>
+
 void update_view(sf::RenderWindow &app, sf::View &camera, std::vector<hexagon> hexs)
 {
                             // Camera Movement
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-                        camera.setCenter(camera.getCenter().x, camera.getCenter().y - 7);
+                        camera.setCenter(camera.getCenter().x, camera.getCenter().y - 7*200);
 
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-                        camera.setCenter(camera.getCenter().x, camera.getCenter().y + 7);
+                        camera.setCenter(camera.getCenter().x, camera.getCenter().y + 7*200);
 
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-                        camera.setCenter(camera.getCenter().x - 7, camera.getCenter().y);
+                        camera.setCenter(camera.getCenter().x - 7*200, camera.getCenter().y);
 
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-                        camera.setCenter(camera.getCenter().x + 7, camera.getCenter().y);
+                        camera.setCenter(camera.getCenter().x + 7*200, camera.getCenter().y);
 
                         // Zooming
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::PageDown))
@@ -32,6 +34,11 @@ void update_view(sf::RenderWindow &app, sf::View &camera, std::vector<hexagon> h
             if(hex.resource != none)
             {
                 app.draw(hex.resourceIcon);
+            }
+
+            if(hex.owner != noOne)
+            {
+                app.draw(hex.ownerHex);
             }
         }
 

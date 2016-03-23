@@ -26,9 +26,27 @@ int main(int argc, char* argv[])
         gridSize = 100;
 
     sf::View camera;
-    camera.setSize(sf::VideoMode::getDesktopMode().width*(gridSize/48), sf::VideoMode::getDesktopMode().height*(gridSize/48));
+    camera.setSize(sf::VideoMode::getDesktopMode().width*(gridSize/48)*200, sf::VideoMode::getDesktopMode().height*(gridSize/48)*200);
     camera.setCenter(0, 0);
     app.setView(camera);
+
+    sf::Texture cocaTexture;
+    cocaTexture.loadFromFile("coca.png");
+    sf::Texture wheatTexture;
+    wheatTexture.loadFromFile("wheat.png");
+    sf::Texture fishTexture;
+    fishTexture.loadFromFile("fish.png");
+    sf::Texture cattleTexture;
+    cattleTexture.loadFromFile("cattle.png");
+    sf::Texture tobaccoTexture;
+    tobaccoTexture.loadFromFile("tobacco.png");
+    sf::Texture cottonTexture;
+    cottonTexture.loadFromFile("cotton.png");
+    sf::Texture horsesTexture;
+    horsesTexture.loadFromFile("horses.png");
+    sf::Texture metalsTexture;
+    cottonTexture.loadFromFile("metals.png");
+
 
     // Generate the grid
         // Setup timer
@@ -36,7 +54,7 @@ int main(int argc, char* argv[])
         double duration;
         start = std::clock();
 
-    std::vector<hexagon> hexs = genGrid(gridSize, camera);
+    std::vector<hexagon> hexs = genGrid(gridSize, camera, cocaTexture, wheatTexture, fishTexture, cattleTexture, tobaccoTexture, cottonTexture, horsesTexture, metalsTexture);
 
         duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
     std::cout << "Generation Time: "<< duration << "s" << std::endl;
