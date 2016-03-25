@@ -1,25 +1,18 @@
 #include "custom.h"
 #include <iostream>
 
-std::vector<hexagon> genGrid(int gridSize, sf::View &camera, sf::Texture &cocaTexture, sf::Texture &wheatTexture, sf::Texture &fishTexture, sf::Texture &cattleTexture, sf::Texture &tobaccoTexture, sf::Texture &cottonTexture, sf::Texture &horsesTexture, sf::Texture &metalsTexture)
+std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures)
 {
 
 /*******************************************Config Values****************************************************************/
+
+
     int jungleChance = 40;
     int landChance = 5;
     int sandChance = 65;
     int mountainChance = 10;
     int townChance = 2;
 
-    int cocaChance = 70;
-    int cattleChance = 5;
-    int fishChance = 2;
-    int wheatChance = 10;
-    int tobaccoChance = 5;
-    int cottonChance = 2;
-
-    int horsesChance = 5;
-    int metalsChance = 3;
 
 /************************************************************************************************************************/
 
@@ -44,7 +37,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, sf::Texture &cocaTe
                 else
                     hexagon.hex.setPosition(i*43.75*200, n*38*200); // 43.75 is 25*1.75     |   40 is 25*1.6
 
-                hexagon.resourceIcon.setPosition(hexagon.hex.getPosition().x + 10*200, hexagon.hex.getPosition().y + 10*200);
+                hexagon.resource.icon.setPosition(hexagon.hex.getPosition().x + 10*200, hexagon.hex.getPosition().y + 10*200);
                 hexagon.ownerHex.setPosition(hexagon.hex.getPosition().x, hexagon.hex.getPosition().y);
                 hexagon.x = i + jumpCounter;
                 hexagon.y = n;
@@ -212,10 +205,10 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, sf::Texture &cocaTe
                         tile.terrain = town;
                         tile.hex.setFillColor(sf::Color::White);
                         randNum = rand() % 100 + 1;
-                        if (randNum < 25) {tile.ownerHex.setFillColor(sf::Color(255, 0, 50, 128));    tile.owner = england;}; // England
-                        if (24 < randNum && randNum < 49) {tile.ownerHex.setFillColor(sf::Color(255, 255, 50, 128));    tile.owner = portugal;}; // Portugal
-                        if (50 < randNum && randNum < 74) {tile.ownerHex.setFillColor(sf::Color(0, 255, 255, 128));    tile.owner = france;}; // France
-                        if (75 < randNum && randNum < 101) {tile.ownerHex.setFillColor(sf::Color(255, 255, 50, 128));    tile.owner = spain;}; // Spain
+                        if (randNum < 25) {tile.ownerHex.setFillColor(sf::Color(255, 0, 50, 50));    tile.owner = england;}; // England
+                        if (24 < randNum && randNum < 51) {tile.ownerHex.setFillColor(sf::Color(255, 0, 255, 50));    tile.owner = portugal;}; // Portugal
+                        if (50 < randNum && randNum < 76) {tile.ownerHex.setFillColor(sf::Color(0, 255, 255, 50));    tile.owner = france;}; // France
+                        if (75 < randNum && randNum < 101) {tile.ownerHex.setFillColor(sf::Color(255, 255, 50, 50));    tile.owner = spain;}; // Spain
                     }
 
                     randNum = rand() % 100 + 1;
@@ -278,57 +271,35 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, sf::Texture &cocaTe
 
                 }
 
-                 int randNum = rand() % 100 + 1;
 
-                 if(tile.terrain == jungle && randNum <= cocaChance)
-                 {
-                    tile.resource = coca;
-                    tile.resourceIcon.setTexture(&cocaTexture);
-                 }
+                for(auto &resourceThing : resources)
+                {
+                    int randNum = rand() % 100 + 1;
+                    for(auto &reqTerrain : resourceThing.requiredTerrain)
+                    {
 
-                    randNum = rand() % 100 + 1;
-                 if(tile.terrain == land && randNum <= wheatChance)
-                 {
-                    tile.resource = wheat;
-                    tile.resourceIcon.setTexture(&wheatTexture);
-                 }
+                        if(tile.terrain == reqTerrain)
+                        {
 
-                    randNum = rand() % 100 + 1;
-                 if(tile.terrain == land && randNum <= cattleChance)
-                 {
-                    tile.resource = cattle;
-                    tile.resourceIcon.setTexture(&cattleTexture);
-                 }
-                    randNum = rand() % 100 + 1;
-                 if(tile.terrain == land && randNum <= tobaccoChance)
-                 {
-                    tile.resource = tobacco;
-                    tile.resourceIcon.setTexture(&tobaccoTexture);
-                 }
-                    randNum = rand() % 100 + 1;
-                 if(tile.terrain == land && randNum <= cottonChance)
-                 {
-                    tile.resource = cotton;
-                    tile.resourceIcon.setTexture(&cottonTexture);
-                 }
-                    randNum = rand() % 100 + 1;
-                 if(tile.terrain == sea && randNum <= fishChance)
-                 {
-                    tile.resource = fish;
-                    tile.resourceIcon.setTexture(&fishTexture);
-                 }
-                    randNum = rand() % 100 + 1;
-                 if(tile.terrain == land && randNum <= horsesChance)
-                 {
-                    tile.resource = horses;
-                    tile.resourceIcon.setTexture(&horsesTexture);
-                 }
-                    randNum = rand() % 100 + 1;
-                 if(tile.terrain == land && randNum <= metalsChance)
-                 {
-                    tile.resource = metals;
-                    tile.resourceIcon.setTexture(&metalsTexture);
-                 }
+                            if(randNum < resourceThing.spawnChance)
+                            {
+                                tile.resource.name = resourceThing.name;
+                                tile.resource.textureName = resourceThing.textureName;
+                            }
+                        }
+                    }
+
+                for (auto &texture : textures)
+                    {
+
+                        if(texture.name == tile.resource.textureName)
+                        {
+                            tile.resource.icon.setTexture(&texture);
+                        }
+
+                    }
+
+                }
             }
 
 
@@ -336,85 +307,118 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, sf::Texture &cocaTe
 /************************************************************************************************************************/
 
 /****************************************Print tiles*********************************************************************/
-        int landCountWhole = 0;
-        int seaCountWhole = 0;
-        int sandCountWhole = 0;
-        int jungleCountWhole = 0;
-        int mountainCountWhole = 0;
-        int lakeCountWhole = 0;
-        int horsesCountWhole = 0;
-        int metalsCountWhole = 0;
 
-        int townCountWhole = 0;
-        int englandCountWhole = 0;
-        int spainCountWhole = 0;
-        int franceCountWhole = 0;
-        int portugalCountWhole = 0;
-        int total = 0;
-                for (auto &tile : hexs)
+            std::vector<counter> tileCounters;
+
+                for (int a = 1; a!=8; a++)
                 {
-                    if(tile.terrain == sea)
+                    counter newCounter;
+                    newCounter.terrain = static_cast<Terrain>(a);
+                    switch (newCounter.terrain)
                     {
-                        seaCountWhole ++;
-                    }
-                    if(tile.terrain == land)
-                    {
-                        landCountWhole ++;
-                    }
-                    if(tile.terrain == sand)
-                    {
-                        sandCountWhole ++;
-                    }
-                    if(tile.terrain == jungle)
-                    {
-                        jungleCountWhole ++;
-                    }
-                    if(tile.terrain == mountain)
-                    {
-                        mountainCountWhole ++;
-                    }
-                    if(tile.terrain == lake)
-                    {
-                        lakeCountWhole ++;
-                    }
-                    if(tile.terrain == horses)
-                    {
-                        horsesCountWhole ++;
-                    }
-                    if(tile.terrain == metals)
-                    {
-                        metalsCountWhole ++;
-                    }
-                    if(tile.terrain == town)
-                    {
-                        townCountWhole ++;
-                    }
-                    if(tile.owner == england)
-                    {
-                        englandCountWhole ++;
-                    }
-                    if(tile.owner == france)
-                    {
-                        franceCountWhole ++;
-                    }
-                    if(tile.owner == portugal)
-                    {
-                        portugalCountWhole ++;
-                    }
-                    if(tile.owner == spain)
-                    {
-                        spainCountWhole ++;
-                    }
+                        case 1:
+                            newCounter.name = "Sea Tiles";
+                            break;
+                        case 2:
+                            newCounter.name = "Land Tiles";
+                            break;
+                        case 3:
+                            newCounter.name = "Mountain Tiles";
+                            break;
+                        case 4:
+                            newCounter.name = "Sand Tiles";
+                            break;
+                        case 5:
+                            newCounter.name = "Jungle Tiles";
+                            break;
+                        case 6:
+                            newCounter.name = "Town Tiles";
+                            break;
+                        case 7:
+                            newCounter.name = "Lake Tiles";
+                            break;
 
-                    total++;
+                        default:
+                            break;
+                    }
+                tileCounters.push_back(newCounter);
+                }
+
+
+            std::vector<counter> ownerCounters;
+                for (int a = 1; a!=5; a++)
+                {
+                    counter newCounter;
+                    newCounter.owner = static_cast<Owner>(a);
+                    switch (newCounter.owner)
+                    {
+                        case 1:
+                            newCounter.name = "English";
+                            break;
+                        case 2:
+                            newCounter.name = "Portruguese";
+                            break;
+                        case 3:
+                            newCounter.name = "Spanish";
+                            break;
+
+                        case 4:
+                            newCounter.name = "French";
+                            break;
+
+                        default:
+                            break;
+                    }
+                ownerCounters.push_back(newCounter);
+                }
+
+            std::vector<counter> resourceCounters;
+                for (auto &resource : resources)
+                {
+                    counter newCounter;
+                    newCounter.name = resource.name;
+                    resourceCounters.push_back(newCounter);
                 }
 
 
 
+                for (auto &tile : hexs)
+                {
+                    for(auto &counter : resourceCounters)
+                    {
+                        if(tile.resource.name == counter.name) {counter.total++;};
+                    }
+
+                    for(auto &counter : tileCounters)
+                    {
+                        if(tile.terrain == counter.terrain) {counter.total++;};
+                    }
+
+                    for(auto &counter : ownerCounters)
+                    {
+                        if(tile.owner == counter.owner) {counter.total++;};
+                    }
+
+                }
 
 
-printf("Tiles: %i\nSeaTiles: %i\nLandTiles: %i\nBeaches: %i\nJungles: %i\nMountains: %i\nLakes: %i\nHorses: %i\nMetals: %i\n\n\nTowns: %i\nEnglish: %i\nFrench: %i\nPortuguese: %i\nSpanish: %i\n", total, seaCountWhole, landCountWhole, sandCountWhole, jungleCountWhole, mountainCountWhole, lakeCountWhole, horsesCountWhole, metalsCountWhole, townCountWhole, englandCountWhole, franceCountWhole, portugalCountWhole, spainCountWhole);
+                printf("\n\nTiles:\n\n");
+                for (auto &counter : tileCounters)
+                {
+                    printf("%s:    %i\n", counter.name.c_str(), counter.total);
+                }
 
+                printf("\n\nResources:\n\n");
+                for (auto &counter : resourceCounters)
+                {
+                    printf("%s:    %i\n", counter.name.c_str(), counter.total);
+                }
+
+                printf("\n\nCountries:\n\n");
+                for (auto &counter : ownerCounters)
+                {
+                    printf("%s:    %i\n", counter.name.c_str(), counter.total);
+                }
 
 
     return hexs;

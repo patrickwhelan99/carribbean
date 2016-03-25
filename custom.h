@@ -1,22 +1,27 @@
 #ifndef CUSTOM_H_INCLUDED
 #define CUSTOM_H_INCLUDED
 #include <SFML/Graphics.hpp>
-//#include "terrain.cpp"
 
-enum Terrain {sea, land, mountain, sand, jungle, town, lake};
-enum Resource {none, fish, coca, wheat, cattle, tobacco, cotton, horses, metals};
+enum Terrain {none, sea, land, mountain, sand, jungle, town, lake};
 enum Owner {noOne, england, portugal, spain, france};
 
-class terrain
+class textureClass : public sf::Texture
 {
     public:
-			std::string name;
-			std::string desc;
-			int movementPoints;
-			sf::Color colour;
+        std::string name;
+        textureClass();
+};
 
+class resourceClass
+{
+    public:
+            int spawnChance;
+            std::string name;
+            sf::CircleShape icon;
+            std::vector<Terrain> requiredTerrain;
+            std::string textureName;
 
-			terrain(std::string name, std::string desc, int movementPoints, sf::Color colour);
+            resourceClass(std::string name = "none", std::string texture = "default.png", int spawnChance = 0, std::vector<Terrain> requiredTerrain = std::vector<Terrain>());
 };
 
 class hexagon : public sf::CircleShape
@@ -26,7 +31,7 @@ class hexagon : public sf::CircleShape
         int y;
         int index;
         Terrain terrain;
-        Resource resource;
+        resourceClass resource;
         Owner owner;
         sf::CircleShape hex;
         sf::CircleShape resourceIcon;
@@ -39,8 +44,19 @@ class hexagon : public sf::CircleShape
 
 };
 
-void update_view(sf::RenderWindow &app, sf::View &camera, std::vector<hexagon> hexs);
-std::vector<hexagon> genGrid(int gridSize, sf::View &camera, sf::Texture &cocaTexture, sf::Texture &wheatTexture, sf::Texture &fishTexture, sf::Texture &cattleTexture, sf::Texture &tobaccoTexture, sf::Texture &cottonTexture, sf::Texture &horsesTexture, sf::Texture &metalsTexture);
+class counter
+{
+    public:
+        int total;
+        std::string name;
+        Terrain terrain;
+        Owner owner;
+        counter();
+};
 
+void update_view(sf::RenderWindow &app, sf::View &camera, std::vector<hexagon> hexs);
+std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures);
+std::vector<resourceClass> loadResources(void);
+std::vector<textureClass> loadTextures(void);
 
 #endif // CUSTOM_H_INCLUDED

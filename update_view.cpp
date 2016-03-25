@@ -31,9 +31,9 @@ void update_view(sf::RenderWindow &app, sf::View &camera, std::vector<hexagon> h
         for (auto const &hex: hexs)
         {
             app.draw(hex.hex);
-            if(hex.resource != none)
+            if(hex.resource.name != "none")
             {
-                app.draw(hex.resourceIcon);
+                app.draw(hex.resource.icon);
             }
 
             if(hex.owner != noOne)

@@ -1,5 +1,6 @@
 #include "custom.h"
 #include <iostream>
+#include <string>
 
 hexagon::hexagon(int x, int y)
 {
@@ -7,7 +8,6 @@ hexagon::hexagon(int x, int y)
     this->hex.setFillColor(sf::Color::Blue);
     this->ownerHex = sf::CircleShape(25*200, 6);
     this->ownerHex.setFillColor(sf::Color(255, 255, 255));
-    this->resource = none;
     this->terrain = sea;
     this->owner = noOne;
     this->resourceIcon = sf::CircleShape(15*200, 6);

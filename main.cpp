@@ -11,6 +11,7 @@
 /*---------------------------*/
 #include <fstream>
 #include <ctime>
+#include <algorithm>
 
 
 
@@ -30,22 +31,9 @@ int main(int argc, char* argv[])
     camera.setCenter(0, 0);
     app.setView(camera);
 
-    sf::Texture cocaTexture;
-    cocaTexture.loadFromFile("coca.png");
-    sf::Texture wheatTexture;
-    wheatTexture.loadFromFile("wheat.png");
-    sf::Texture fishTexture;
-    fishTexture.loadFromFile("fish.png");
-    sf::Texture cattleTexture;
-    cattleTexture.loadFromFile("cattle.png");
-    sf::Texture tobaccoTexture;
-    tobaccoTexture.loadFromFile("tobacco.png");
-    sf::Texture cottonTexture;
-    cottonTexture.loadFromFile("cotton.png");
-    sf::Texture horsesTexture;
-    horsesTexture.loadFromFile("horses.png");
-    sf::Texture metalsTexture;
-    cottonTexture.loadFromFile("metals.png");
+    //  Load textures and resources using *.txt files
+    std::vector<textureClass> textures = loadTextures();
+    std::vector<resourceClass> resources = loadResources();
 
 
     // Generate the grid
@@ -54,7 +42,8 @@ int main(int argc, char* argv[])
         double duration;
         start = std::clock();
 
-    std::vector<hexagon> hexs = genGrid(gridSize, camera, cocaTexture, wheatTexture, fishTexture, cattleTexture, tobaccoTexture, cottonTexture, horsesTexture, metalsTexture);
+    printf("Creating Grid!...\n");
+    std::vector<hexagon> hexs = genGrid(gridSize, camera, resources, textures);
 
         duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
     std::cout << "Generation Time: "<< duration << "s" << std::endl;
@@ -78,6 +67,18 @@ int main(int argc, char* argv[])
                 {
                     app.close();
                 }
+            }
+
+            if (event.type == sf::Event::MouseButtonReleased) // Gets tile info
+            {
+                    for (auto &tile : hexs)
+                    {
+                        if(tile.hex.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
+                        {
+                            printf("Tile: %i\nX: %i\nY: %i\nTerrain: %i\nOwner: %i\nResource: %s\n\n\n", tile.index, tile.x, tile.y, tile.terrain, tile.owner, tile.resource.name.c_str());
+                            break;
+                        }
+                    }
             }
 
         }

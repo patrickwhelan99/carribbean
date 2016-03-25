@@ -1,0 +1,9 @@
+fish, fishTexture, 3, sea, 
+coca, cocaTexture, 40, jungle, 
+cattle, cattleTexture, 7, land,  
+horses, horsesTexture, 4, land,  
+metals, metalsTexture, 2, land,  
+wheat, wheatTexture, 10, land,  
+tobacco, tobaccoTexture, 4, land,  
+cotton, cottonTexture, 6, land,  
+
