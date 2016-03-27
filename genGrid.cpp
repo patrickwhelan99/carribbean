@@ -31,16 +31,21 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
 
         for (int i = 0; i<gridSize; i++)
             {
-                hexagon hexagon(25, 6);
+                hexagon hexagon;
                 if((n % 2) == 0) // every other y
+                {
                     hexagon.hex.setPosition(i*43.75*200 + 43.75*0.5*200, n*38*200);
+                }
                 else
+                {
                     hexagon.hex.setPosition(i*43.75*200, n*38*200); // 43.75 is 25*1.75     |   40 is 25*1.6
+                }
 
                 hexagon.resource.icon.setPosition(hexagon.hex.getPosition().x + 10*200, hexagon.hex.getPosition().y + 10*200);
                 hexagon.ownerHex.setPosition(hexagon.hex.getPosition().x, hexagon.hex.getPosition().y);
-                hexagon.x = i + jumpCounter;
-                hexagon.y = n;
+                hexagon.x += (i + jumpCounter);
+                hexagon.y = gridSize - n;
+                hexagon.z = (hexagon.x + hexagon.y)*-1;
                 hexagon.index = index;
                 hexs.push_back(hexagon);
 

@@ -29,6 +29,7 @@ class hexagon : public sf::CircleShape
     public:
         int x;
         int y;
+        int z;
         int index;
         Terrain terrain;
         resourceClass resource;
@@ -37,8 +38,9 @@ class hexagon : public sf::CircleShape
         sf::CircleShape resourceIcon;
         sf::CircleShape ownerHex;
 
-        hexagon(int x, int y);
+        hexagon();
         std::vector<hexagon*> adjacentTiles(std::vector<hexagon> &hexs, int vectorSize);
+        int distanceTo(hexagon* to);
     private:
     protected:
 
@@ -54,7 +56,21 @@ class counter
         counter();
 };
 
-void update_view(sf::RenderWindow &app, sf::View &camera, std::vector<hexagon> hexs);
+class hexWindow
+{
+    public:
+        sf::RectangleShape rect;
+        std::string infoStr;
+        sf::Text infoText;
+        hexagon* hex;
+        int distance;
+
+        hexWindow(hexagon* hexagon, sf::View &hud, sf::Font &font);
+        ~hexWindow();
+        std::string genString();
+};
+
+void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hud, std::vector<hexagon> hexs, hexWindow* window);
 std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures);
 std::vector<resourceClass> loadResources(void);
 std::vector<textureClass> loadTextures(void);

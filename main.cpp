@@ -12,6 +12,7 @@
 #include <fstream>
 #include <ctime>
 #include <algorithm>
+#include <math.h>
 
 
 
@@ -31,6 +32,10 @@ int main(int argc, char* argv[])
     camera.setCenter(0, 0);
     app.setView(camera);
 
+    sf::View hud;
+    hud.setSize(1000, 1000);
+    hud.setCenter(0, 0);
+
     //  Load textures and resources using *.txt files
     std::vector<textureClass> textures = loadTextures();
     std::vector<resourceClass> resources = loadResources();
@@ -49,6 +54,11 @@ int main(int argc, char* argv[])
     std::cout << "Generation Time: "<< duration << "s" << std::endl;
 
 
+    sf::Font mainFont;
+    mainFont.loadFromFile("DroidSans.ttf");
+
+    hexagon* oldHex = nullptr;
+    hexWindow* window = nullptr;
 
     // Game loop
     while (app.isOpen())
@@ -65,26 +75,53 @@ int main(int argc, char* argv[])
             {
                 if(event.key.code == sf::Keyboard::Escape)
                 {
+                    delete window;
                     app.close();
                 }
             }
 
-            if (event.type == sf::Event::MouseButtonReleased) // Gets tile info
+            if (event.type == sf::Event::MouseButtonPressed) // Gets tile info
             {
+                if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                {
                     for (auto &tile : hexs)
                     {
                         if(tile.hex.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
                         {
-                            printf("Tile: %i\nX: %i\nY: %i\nTerrain: %i\nOwner: %i\nResource: %s\n\n\n", tile.index, tile.x, tile.y, tile.terrain, tile.owner, tile.resource.name.c_str());
-                            break;
+                            if(window != nullptr)
+                            {
+                                std::cout << "Distance from last tile:  " << window->hex->distanceTo(&tile) << std::endl;
+                                delete window;
+                            }
+
+                            window = new hexWindow(&tile, hud, mainFont);
+                            std::cout << window->infoStr << std::endl;
+                            break; // stops the loop over all tiles
                         }
                     }
+                }
+
+
+                if(sf::Mouse::isButtonPressed(sf::Mouse::Right))
+                {
+                    if(window != nullptr)
+                    {
+                        for (auto &tile : hexs)
+                        {
+                            if(tile.hex.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
+                            {
+                                window->distance = window->hex->distanceTo(&tile);
+                                window->infoText.setString(window->genString());
+                            }
+                        }
+                    }
+                }
+
             }
 
         }
 
-
-    update_view(app, camera, hexs);
+    update_view(app, camera, hud, hexs, window);
 
 
     }
