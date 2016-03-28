@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <iostream>
 
-void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hud, std::vector<hexagon> hexs, hexWindow* window)
+void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> hexs, hexWindow* window, hudClass HUD)
 {
                             // Camera Movement
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
@@ -65,13 +65,19 @@ void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hud, std::ve
         }
 
 
-    app.setView(hud);
+    app.setView(hudView);
 
         if(window != nullptr)
         {
             app.draw(window->rect);
             app.draw(window->infoText);
         }
+
+        app.draw(HUD.top);
+        app.draw(HUD.dateText);
+        app.draw(HUD.nameText);
+        app.draw(HUD.moneyText);
+
 
         app.display();
 

@@ -382,6 +382,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                 {
                     counter newCounter;
                     newCounter.name = resource.name;
+                    newCounter.spawnTerrains = resource.requiredTerrain;
                     resourceCounters.push_back(newCounter);
                 }
 
@@ -410,19 +411,39 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                 printf("\n\nTiles:\n\n");
                 for (auto &counter : tileCounters)
                 {
-                    printf("%s:    %i\n", counter.name.c_str(), counter.total);
+                    counter.percentage = ((float(counter.total)/float((gridSize*gridSize)))*100);
+                    printf("%s:    %i   %f%% of total\n", counter.name.c_str(), counter.total, counter.percentage);
                 }
 
                 printf("\n\nResources:\n\n");
                 for (auto &counter : resourceCounters)
                 {
-                    printf("%s:    %i\n", counter.name.c_str(), counter.total);
+                    int totalTiles = 0; // divide by 0 error possible
+                    for(auto &terrain : counter.spawnTerrains)
+                    {
+                        for (auto &counter1 : tileCounters)
+                        {
+                            if(terrain == counter1.terrain)
+                                totalTiles += counter1.total;
+                        }
+
+                    }
+
+                    counter.percentage = ((float(counter.total)/float(totalTiles))*100);
+                    printf("%s:    %i   %f%% of spawnable tiles\n", counter.name.c_str(), counter.total, counter.percentage);
                 }
 
                 printf("\n\nCountries:\n\n");
                 for (auto &counter : ownerCounters)
                 {
-                    printf("%s:    %i\n", counter.name.c_str(), counter.total);
+                    int townsTotal;
+                    for (auto &counter : tileCounters)
+                    {
+                        if(counter.terrain == town)
+                            townsTotal = counter.total;
+                    }
+                    counter.percentage = ((float(counter.total)/float((townsTotal)))*100);
+                    printf("%s:    %i   %f%% of towns\n", counter.name.c_str(), counter.total, counter.percentage);
                 }
 
 

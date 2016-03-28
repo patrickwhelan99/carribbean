@@ -10,9 +10,8 @@
 #include <time.h>
 /*---------------------------*/
 #include <fstream>
-#include <ctime>
-#include <algorithm>
-#include <math.h>
+#include <ctime> // for clock
+#include <algorithm> // for clock
 
 
 
@@ -32,9 +31,9 @@ int main(int argc, char* argv[])
     camera.setCenter(0, 0);
     app.setView(camera);
 
-    sf::View hud;
-    hud.setSize(1000, 1000);
-    hud.setCenter(0, 0);
+    sf::View hudView;
+    hudView.setSize(1000, 1000);
+    hudView.setCenter(0, 0);
 
     //  Load textures and resources using *.txt files
     std::vector<textureClass> textures = loadTextures();
@@ -57,8 +56,18 @@ int main(int argc, char* argv[])
     sf::Font mainFont;
     mainFont.loadFromFile("DroidSans.ttf");
 
-    hexagon* oldHex = nullptr;
+    Date date;
+    double daySpeed = 1; // days last for x sec(s)
+
+    player player;
+
+    hudClass HUD(hudView, mainFont);
+
     hexWindow* window = nullptr;
+
+    start = std::clock();
+    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+
 
     // Game loop
     while (app.isOpen())
@@ -89,13 +98,9 @@ int main(int argc, char* argv[])
                         if(tile.hex.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
                         {
                             if(window != nullptr)
-                            {
-                                std::cout << "Distance from last tile:  " << window->hex->distanceTo(&tile) << std::endl;
                                 delete window;
-                            }
 
-                            window = new hexWindow(&tile, hud, mainFont);
-                            std::cout << window->infoStr << std::endl;
+                            window = new hexWindow(&tile, hudView, mainFont);
                             break; // stops the loop over all tiles
                         }
                     }
@@ -116,12 +121,21 @@ int main(int argc, char* argv[])
                         }
                     }
                 }
-
             }
-
         }
 
-    update_view(app, camera, hud, hexs, window);
+    HUD.update(player, date);
+    update_view(app, camera, hudView, hexs, window, HUD);
+
+    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+    if(duration >= daySpeed) // every second
+    {
+        update_view(app, camera, hudView, hexs, window, HUD);
+        duration = 0;
+        start = std::clock();
+        HUD.dateStr = date.update();
+    }
+
 
 
     }
