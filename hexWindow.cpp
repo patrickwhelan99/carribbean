@@ -1,5 +1,6 @@
 #include "custom.h"
 #include <string.h>
+#include <iostream>
 
 hexWindow::hexWindow(hexagon* hexagon, sf::View &hud, sf::Font &font)
 {
@@ -16,6 +17,8 @@ hexWindow::hexWindow(hexagon* hexagon, sf::View &hud, sf::Font &font)
     this->infoText.setCharacterSize(25);
     this->infoText.setStyle(sf::Text::Bold);
     this->infoText.setColor(sf::Color::White);
+
+    this->display = true;
 }
 
 hexWindow::~hexWindow()

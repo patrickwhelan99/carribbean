@@ -14,6 +14,7 @@ hexagon::hexagon()
     this->x = 0;
     this->y = 0;
     this->z = 0;
+    this->movementPoints = 1;
 }
 
 std::vector<hexagon*> hexagon::adjacentTiles(std::vector<hexagon> &hexs, int gridSize)
@@ -86,9 +87,9 @@ std::vector<hexagon*> hexagon::adjacentTiles(std::vector<hexagon> &hexs, int gri
 
 int hexagon::distanceTo(hexagon* to)
 {
-    float distancex = (to->x-this->x);
-    float distancey = (to->y-this->y);
-    float distancez = (to->z-this->z);
+    int distancex = (to->x)-(this->x);
+    int distancey = (to->y)-(this->y);
+    int distancez = (to->z)-(this->z);
 
     if(distancex<0)
         distancex *= -1;
@@ -96,6 +97,7 @@ int hexagon::distanceTo(hexagon* to)
         distancey *= -1;
     if(distancez<0)
         distancez *= -1;
+
 
     return (distancex+distancey+distancez)/2;
 }

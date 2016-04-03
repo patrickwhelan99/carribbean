@@ -1,4 +1,3 @@
-
 #include "custom.h"
 
 #include <SFML/Graphics.hpp>
@@ -12,8 +11,7 @@
 #include <fstream>
 #include <ctime> // for clock
 #include <algorithm> // for clock
-
-
+#include <thread>
 
 int main(int argc, char* argv[])
 {
@@ -59,11 +57,13 @@ int main(int argc, char* argv[])
     Date date;
     double daySpeed = 1; // days last for x sec(s)
 
-    player player;
+    sf::Texture playerTexture;
+    playerTexture.loadFromFile("tobacco.png");
+    player player(playerTexture, hexs);
 
     hudClass HUD(hudView, mainFont);
 
-    hexWindow* window = nullptr;
+    hexWindow window(&(hexs.at(0)), camera, mainFont);
 
     start = std::clock();
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
@@ -84,8 +84,8 @@ int main(int argc, char* argv[])
             {
                 if(event.key.code == sf::Keyboard::Escape)
                 {
-                    delete window;
-                    app.close();
+                    if(window.display)
+                        window.display = false;
                 }
             }
 
@@ -97,10 +97,9 @@ int main(int argc, char* argv[])
                     {
                         if(tile.hex.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
                         {
-                            if(window != nullptr)
-                                delete window;
-
-                            window = new hexWindow(&tile, hudView, mainFont);
+                            window.hex = &tile;
+                            window.infoText.setString(window.genString());
+                            window.display = true;
                             break; // stops the loop over all tiles
                         }
                     }
@@ -109,28 +108,32 @@ int main(int argc, char* argv[])
 
                 if(sf::Mouse::isButtonPressed(sf::Mouse::Right))
                 {
-                    if(window != nullptr)
-                    {
+
                         for (auto &tile : hexs)
                         {
                             if(tile.hex.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
                             {
-                                window->distance = window->hex->distanceTo(&tile);
-                                window->infoText.setString(window->genString());
+
+                                parameters p; // may only pass one object as param
+                                p.hexPath = player.findPath(&tile, hexs, gridSize);
+                                p.character = &player;
+                                std::thread t1(playerMovement, p);
+                                t1.detach();
+                                break;
                             }
                         }
-                    }
                 }
             }
         }
 
+
     HUD.update(player, date);
-    update_view(app, camera, hudView, hexs, window, HUD);
+    update_view(app, camera, hudView, hexs, window, HUD, player);
 
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
     if(duration >= daySpeed) // every second
     {
-        update_view(app, camera, hudView, hexs, window, HUD);
+        //update_view(app, camera, hudView, hexs, window, HUD, player);
         duration = 0;
         start = std::clock();
         HUD.dateStr = date.update();

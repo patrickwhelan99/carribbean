@@ -80,6 +80,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
             {
                 tile.terrain = land;
                 tile.hex.setFillColor(sf::Color::Green);
+                tile.movementPoints = 1;
 
             }
 
@@ -134,11 +135,13 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                         {
                             tile.terrain = land;
                             tile.hex.setFillColor(sf::Color::Green);
+                            tile.movementPoints = 1;
                         }
                         else // Make SAND BABIES
                         {
                             tile.terrain = sand;
                             tile.hex.setFillColor(sf::Color::Yellow);
+                            tile.movementPoints = 2;
                         }
 
                     }
@@ -148,6 +151,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                             //std::cout << "Chipping away!" << std::endl;
                             tile.terrain = sea;
                             tile.hex.setFillColor(sf::Color::Blue);
+                            tile.movementPoints = 1;
                         }
 
 
@@ -201,6 +205,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                     {
                         tile.terrain = jungle;
                         tile.hex.setFillColor(sf::Color(50, 200, 50));
+                        tile.movementPoints = 3;
                     }
 
                     randNum = rand() % 100 + 1;
@@ -209,6 +214,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                     {
                         tile.terrain = town;
                         tile.hex.setFillColor(sf::Color::White);
+                        tile.movementPoints = 1;
                         randNum = rand() % 100 + 1;
                         if (randNum < 25) {tile.ownerHex.setFillColor(sf::Color(255, 0, 50, 50));    tile.owner = england;}; // England
                         if (24 < randNum && randNum < 51) {tile.ownerHex.setFillColor(sf::Color(255, 0, 255, 50));    tile.owner = portugal;}; // Portugal
@@ -222,6 +228,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                     {
                         tile.terrain = mountain;
                         tile.hex.setFillColor(sf::Color(0, 0, 0));
+                        tile.movementPoints = 4;
                     }
 
                     randNum = rand() % 100 + 1;
@@ -230,6 +237,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                     {
                         tile.terrain = lake;
                         tile.hex.setFillColor(sf::Color(0, 200, 255));
+                        tile.movementPoints = 1;
                     }
                 }
 
@@ -444,6 +452,16 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                     }
                     counter.percentage = ((float(counter.total)/float((townsTotal)))*100);
                     printf("%s:    %i   %f%% of towns\n", counter.name.c_str(), counter.total, counter.percentage);
+                }
+
+
+
+
+
+
+                for(auto &tile : hexs)
+                {
+                    tile.g = tile.movementPoints;
                 }
 
 

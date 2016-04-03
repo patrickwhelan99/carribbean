@@ -29,13 +29,23 @@ class resourceClass
 class hexagon : public sf::CircleShape
 {
     public:
+    //Coordinates
         int x;
         int y;
         int z;
+    //UID
         int index;
+    //PathFinding
+        int movementPoints;
+        int g;
+        int h;
+        int f;
+        hexagon* parent;
+    //Data
         Terrain terrain;
         resourceClass resource;
         Owner owner;
+    //Graphics
         sf::CircleShape hex;
         sf::CircleShape resourceIcon;
         sf::CircleShape ownerHex;
@@ -68,6 +78,7 @@ class hexWindow
         sf::Text infoText;
         hexagon* hex;
         int distance;
+        bool display;
 
         hexWindow(hexagon* hexagon, sf::View &hud, sf::Font &font);
         ~hexWindow();
@@ -93,7 +104,12 @@ class player : public sf::Sprite
     public:
         int money;
         std::string name;
-        player();
+        player(sf::Texture &texture, std::vector<hexagon> &hexs);
+        hexagon* currentHex;
+        int x;
+        int y;
+        int z;
+        std::vector<hexagon*> findPath(hexagon* tileTo, std::vector<hexagon> &hexs, int vectorSize);
 };
 
 class hudClass
@@ -111,10 +127,18 @@ class hudClass
         void update(player &player, Date &date);
 };
 
+class parameters
+{
+    public:
+        std::vector<hexagon*> hexPath;
+        player* character;
+};
 
-void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> hexs, hexWindow* window, hudClass HUD);
+
+void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, player &player);
 std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures);
 std::vector<resourceClass> loadResources(void);
 std::vector<textureClass> loadTextures(void);
+void playerMovement(parameters p);
 
 #endif // CUSTOM_H_INCLUDED
