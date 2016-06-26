@@ -10,7 +10,7 @@ hexWindow::hexWindow(hexagon* hexagon, sf::View &hud, sf::Font &font)
     this->rect.setFillColor(sf::Color(10, 10, 10, 128));
 
     this->distance = 0;
-    this->infoStr = std::string("X: ") + std::to_string(hexagon->x) + std::string("\nY: ") + std::to_string(hexagon->y) + std::string("\nZ: ") + std::to_string(hexagon->z) + std::string("\nResource: ") + hexagon->resource.name + std::string("\nDistance: ") + std::to_string(this->distance);
+    this->infoStr = std::string("X: ") + std::to_string(hexagon->x) + std::string("\nY: ") + std::to_string(hexagon->y) + std::string("\nZ: ") + std::to_string(hexagon->z) + std::string("\nResource: ") + hexagon->resource.name + std::string("\nFood: ") + std::to_string(hexagon->resource.food);
 
     this->infoText = sf::Text(infoStr, font);
     this->infoText.setPosition(-490, 200);
@@ -18,7 +18,7 @@ hexWindow::hexWindow(hexagon* hexagon, sf::View &hud, sf::Font &font)
     this->infoText.setStyle(sf::Text::Bold);
     this->infoText.setColor(sf::Color::White);
 
-    this->display = true;
+    this->display = false;
 }
 
 hexWindow::~hexWindow()
@@ -28,5 +28,5 @@ hexWindow::~hexWindow()
 
 std::string hexWindow::genString()
 {
-    return std::string("X: ") + std::to_string(this->hex->x) + std::string("\nY: ") + std::to_string(this->hex->y) + std::string("\nZ: ") + std::to_string(this->hex->z) + std::string("\nResource: ") + this->hex->resource.name + std::string("\nDistance: ") + std::to_string(this->distance);
+    return std::string("Owner: ") + std::to_string(this->hex->owner) + std::string("\nX: ") + std::to_string(this->hex->x) + std::string("\nY: ") + std::to_string(this->hex->y) + std::string("\nZ: ") + std::to_string(this->hex->z) + std::string("\nResource: ") + this->hex->resource.name + std::string("\nFood: ") + std::to_string(this->hex->resource.food) + std::string("\nProduction: ") + std::to_string(this->hex->resource.production);
 }

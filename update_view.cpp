@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <iostream>
 
-void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, player &player)
+void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, player &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats)
 {
                             // Camera Movement
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
@@ -66,12 +66,27 @@ void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std
 
     app.draw(player);
 
+    for(auto &boat : AIBoats)
+        app.draw(boat);
+
     app.setView(hudView);
 
         if(window.display)
         {
             app.draw(window.rect);
             app.draw(window.infoText);
+        }
+
+        if(townWindow.display)
+        {
+            app.draw(townWindow.windowBox);
+            app.draw(townWindow.nameText);
+            app.draw(townWindow.infoText);
+            app.draw(townWindow.pic1);
+            app.draw(townWindow.pic2);
+            app.draw(townWindow.pic3);
+            app.draw(townWindow.pic4);
+            app.draw(townWindow.pic5);
         }
 
         app.draw(HUD.top);

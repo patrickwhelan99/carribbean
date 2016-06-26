@@ -14,7 +14,11 @@ hexagon::hexagon()
     this->x = 0;
     this->y = 0;
     this->z = 0;
+    this->g = 0;
+    this->h = 0;
     this->movementPoints = 1;
+    this->parent = nullptr;
+    this->town = nullptr;
 }
 
 std::vector<hexagon*> hexagon::adjacentTiles(std::vector<hexagon> &hexs, int gridSize)

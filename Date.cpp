@@ -3,15 +3,15 @@
 
 Date::Date()
 {
-    this->day = sunday;
-    this->dayStr = "sun";
-    this->month = april;
-    this->monthStr = "apr";
+    this->day = monday;
+    this->dayStr = "Mon";
+    this->month = january;
+    this->monthStr = "Jan";
     this->year = 1742;
-    this->monthDay = 0;
+    this->monthDay = 1;
 }
 
-std::string Date::update()
+std::string Date::update(bool &monthTick, bool &yearTick)
 {
     if(static_cast<int>(this->day) < 6)
     {
@@ -37,7 +37,10 @@ std::string Date::update()
             {
                 this->month = static_cast<Month>(0);
                 this->year++;
+                yearTick = true;
             }
+
+            monthTick = true;
         }
     }
 
@@ -55,6 +58,8 @@ std::string Date::update()
                 this->month = static_cast<Month>(0);
                 this->year++;
             }
+
+            monthTick = true;
         }
     }
 
@@ -72,6 +77,8 @@ std::string Date::update()
                 this->month = static_cast<Month>(0);
                 this->year++;
             }
+
+            monthTick = true;
         }
     }
 

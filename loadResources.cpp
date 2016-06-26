@@ -38,6 +38,12 @@ std::vector<resourceClass> loadResources(void)
                     if(n == i-2)
                         newResource.spawnChance = atoi(token.c_str());
 
+                    if(n == i-3)
+                        newResource.food = atoi(token.c_str());
+
+                    if(n == i-4)
+                        newResource.production = atoi(token.c_str());
+
                         if(token == "sea")
                             newResource.requiredTerrain.push_back(sea);
                         if(token == "land")
@@ -62,7 +68,7 @@ std::vector<resourceClass> loadResources(void)
     }
     else
     {
-        //EXIT_FAILURE;
+        printf("Failed to Load resources.txt!\n");
     }
 
     return resources;

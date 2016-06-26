@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <iostream>
 
-std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures)
+std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats)
 {
 
 /*******************************************Config Values****************************************************************/
@@ -52,7 +52,6 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                 if((i == gridSize/2) && (n == gridSize/2))
                 {
                     camera.setCenter(hexagon.hex.getPosition());
-                    std::cout << hexagon.hex.getPosition().x << "," << hexagon.hex.getPosition().y << std::endl;
                 }
 
                 index++;
@@ -160,6 +159,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
 /************************************************************************************************************************/
 
 /********************************************Place SEA/LAND/TOWN/LAKE****************************************************/
+
             for (auto &tile : hexs)
             {
                 int adjSea = 0;
@@ -207,20 +207,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                         tile.hex.setFillColor(sf::Color(50, 200, 50));
                         tile.movementPoints = 3;
                     }
-
-                    randNum = rand() % 100 + 1;
-
-                    if(tile.terrain == land && adjLand > 0 && randNum <= townChance && adjTown == 0 && adjSea > 0)
-                    {
-                        tile.terrain = town;
-                        tile.hex.setFillColor(sf::Color::White);
-                        tile.movementPoints = 1;
-                        randNum = rand() % 100 + 1;
-                        if (randNum < 25) {tile.ownerHex.setFillColor(sf::Color(255, 0, 50, 50));    tile.owner = england;}; // England
-                        if (24 < randNum && randNum < 51) {tile.ownerHex.setFillColor(sf::Color(255, 0, 255, 50));    tile.owner = portugal;}; // Portugal
-                        if (50 < randNum && randNum < 76) {tile.ownerHex.setFillColor(sf::Color(0, 255, 255, 50));    tile.owner = france;}; // France
-                        if (75 < randNum && randNum < 101) {tile.ownerHex.setFillColor(sf::Color(255, 255, 50, 50));    tile.owner = spain;}; // Spain
-                    }
+///TOWN WAS ERE
 
                     randNum = rand() % 100 + 1;
 
@@ -298,6 +285,8 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                             {
                                 tile.resource.name = resourceThing.name;
                                 tile.resource.textureName = resourceThing.textureName;
+                                tile.resource.food = resourceThing.food;
+                                tile.resource.production = resourceThing.production;
                             }
                         }
                     }
@@ -313,8 +302,73 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                     }
 
                 }
+
             }
 
+            for(auto &tile : hexs)
+            {
+
+                int adjSea = 0;
+                int adjLand = 0;
+                int adjSand = 0;
+                int adjTown = 0;
+                int adjLake = 0;
+                int adjResource = 0;
+
+                for (auto &adjTile : tile.adjacentTiles(hexs, gridSize))
+                {
+                    switch (adjTile->terrain)
+                    {
+                        case sea:
+                            adjSea++;
+                            break;
+
+                        case land:
+                            adjLand++;
+                            break;
+
+                        case sand:
+                            adjSand++;
+                            break;
+
+                        case town:
+                            adjTown++;
+                            break;
+
+                        case lake:
+                            adjLake++;
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    if(adjTile->resource.name != "none")
+                        adjResource += 1;
+
+                }
+
+                    int randNum = rand() % 100 + 1;
+
+                    if(tile.terrain == land && adjLand > 0 && randNum <= townChance && adjTown == 0 && adjSea > 0 && tile.resource.name == "none" && adjResource > 0)
+                    {
+                        tile.terrain = town;
+                        tile.hex.setFillColor(sf::Color::White);
+                        tile.movementPoints = 1;
+                        randNum = rand() % 100 + 1;
+                        if (randNum < 25)
+                         {tile.ownerHex.setFillColor(sf::Color(255, 0, 50, 50));    tile.owner = england;}; // England
+                        if (24 < randNum && randNum < 51) {tile.ownerHex.setFillColor(sf::Color(255, 50, 255, 50));    tile.owner = portugal;}; // Portugal
+                        if (50 < randNum && randNum < 76) {tile.ownerHex.setFillColor(sf::Color(0, 255, 255, 50));    tile.owner = france;}; // France
+                        if (75 < randNum && randNum < 101) {tile.ownerHex.setFillColor(sf::Color(255, 255, 50, 50));    tile.owner = spain;}; // Spain
+
+
+                        std::vector<hexagon*> adjTiles = tile.adjacentTiles(hexs, gridSize);
+                        townClass newTown(&hexs.at(tile.index), adjTiles, tile.owner);
+                        towns.push_back(newTown);
+
+                    }
+            }
 
 
 /************************************************************************************************************************/
@@ -410,7 +464,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
 
                     for(auto &counter : ownerCounters)
                     {
-                        if(tile.owner == counter.owner) {counter.total++;};
+                        if(tile.owner == counter.owner && tile.terrain == town) {counter.total++;};
                     }
 
                 }
@@ -438,7 +492,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                     }
 
                     counter.percentage = ((float(counter.total)/float(totalTiles))*100);
-                    printf("%s:    %i   %f%% of spawnable tiles\n", counter.name.c_str(), counter.total, counter.percentage);
+                    printf("%s:    %i   %f%% of possible spawnable tiles\n", counter.name.c_str(), counter.total, counter.percentage);
                 }
 
                 printf("\n\nCountries:\n\n");
@@ -463,6 +517,8 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                 {
                     tile.g = tile.movementPoints;
                 }
+
+
 
 
     return hexs;

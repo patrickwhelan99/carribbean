@@ -40,7 +40,7 @@ std::vector<textureClass> loadTextures(void)
     }
     else
     {
-        //EXIT_FAILURE;
+       printf("Failed to Load resources.txt!\n");
     }
 
     return textures;
