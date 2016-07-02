@@ -50,50 +50,23 @@ int main(int argc, char* argv[])
         start = std::clock();
 
     printf("Creating Grid!...\n");
+    std::vector<hexagon> hexs;
     std::vector<townClass> towns;
     std::vector<AIBoat> AIBoats;
-    std::vector<hexagon> hexs = genGrid(gridSize, camera, resources, textures, towns, AIBoats);
+    std::vector<int> edgeTiles;
+    genGrid(hexs, gridSize, camera, resources, textures, towns, AIBoats);
 
-        duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
-    std::cout << "Generation Time: "<< duration << "s\n" << std::endl;
+    duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+    std::cout << "Generation Time: "<< duration/4 << "s\n" << std::endl;
 
 
-    std::cout << "Charting the Seas!" << std::endl;
-    printf("Generating %i Paths!\n", static_cast<int>((static_cast<int>(towns.size())^2) - static_cast<int>(towns.size())));
-    double percentageCharted = 0;
-    std::vector< std::vector<hexagon*> > townPaths;
-    std::vector<std::future< std::vector<hexagon*> > > path;
-    pathParameters ppArray[static_cast<int>(towns.size()*towns.size()-towns.size())];
-    //printf("Path size: %i\n", static_cast<int>(towns.size()*towns.size()-towns.size()));
+    std::cout << "Charting the Seas!\n" << std::endl;
     start = std::clock();
-    int n = 0;
-    for(auto &town1 : towns)
-    {
-        for(auto &town2 : towns)
-        {
-            if(town1.tile && town2.tile && town1.tile->index!=town2.tile->index)
-            {
-                    printf("Calculating %i -> %i\n", town1.tile->index, town2.tile->index);
-                    hexagon* a = town1.tile;
-                    hexagon* b = town2.tile;
-                    pathParameters p(a, b, hexs, gridSize);
-                    ppArray[n] = std::move(p);
-                    path.push_back(std::async(std::launch::async, findPath, std::ref(ppArray[n])));
-                    n++;
-            }
-        }
 
-    }
-
-    for(auto &i : path)
-    {
-        townPaths.push_back(i.get());
-        percentageCharted += 100/(towns.size()*towns.size()-towns.size());
-        std::cout << static_cast<int>(percentageCharted) << "%\n";
-    }
+    std::vector<std::vector<hexagon*> > townPaths = initPathGen(towns, hexs, gridSize, edgeTiles);
 
     duration = (( std::clock() - start ) / (double) CLOCKS_PER_SEC)/4;
-    std::cout << "Charting Time: "<< duration << "s\n" << std::endl;
+    std::cout << "Charting Time: "<< duration/4 << "s\n" << std::endl;
 
 
     for(auto &texture : textures)
@@ -105,6 +78,7 @@ int main(int argc, char* argv[])
                 AIBoat newBoat(texture, hexs, townPaths);
                 AIBoats.push_back(newBoat);
             }
+            break;
         }
     }
 
@@ -145,6 +119,17 @@ int main(int argc, char* argv[])
                     if(window.display)
                         window.display = false;
                 }
+
+                if(event.key.code == sf::Keyboard::Q)
+                {
+                    camera.rotate(-45);
+                }
+
+                if(event.key.code == sf::Keyboard::E)
+                {
+                    camera.rotate(45);
+                }
+
             }
 
             if (event.type == sf::Event::MouseButtonPressed) // Gets tile info
@@ -219,17 +204,29 @@ int main(int argc, char* argv[])
         HUD.dateStr = date.update(monthTick, yearTick);
 
 
+        for(auto &texture : textures)
+        {
+            if(texture.name == "boatTexture")
+            {
+                for(int i = 0; i<10; i++)
+                {
+                    AIBoat newBoat(texture, hexs, townPaths);
+                    AIBoats.push_back(newBoat);
+                }
+                break;
+            }
+        }
+
         for(auto &boat : AIBoats)
         {
-            if(!boat.moveNext(hexs, gridSize))
+            if(!boat.moveNext())
             {
                 while(true)
                 {
                     int randnum = rand() % ((townPaths.size()-1) + 1);
-                    if(townPaths.at(randnum).at(0) == boat.currentHex)
+                    if(townPaths.at(randnum).at(0)->index == boat.currentHex->index)
                     {
                         boat.currentPath = townPaths.at(randnum);
-                        printf("Fixed?\n");
                         break;
                     }
                 }

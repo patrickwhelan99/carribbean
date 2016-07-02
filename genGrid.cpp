@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <iostream>
 
-std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats)
+void genGrid(std::vector<hexagon> &hexs, int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats)
 {
 
 /*******************************************Config Values****************************************************************/
@@ -17,7 +17,6 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
 /************************************************************************************************************************/
 
 /********************************************Generating hex grid*********************************************************/
-    std::vector<hexagon> hexs;
     int jumpCounter = 0;
     int index = 0;
 
@@ -34,7 +33,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                 hexagon hexagon;
                 if((n % 2) == 0) // every other y
                 {
-                    hexagon.hex.setPosition(i*43.75*200 + 43.75*0.5*200, n*38*200);
+                    hexagon.hex.setPosition(i*43.75*200 + 43.75*100, n*38*200);
                 }
                 else
                 {
@@ -55,6 +54,7 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                 }
 
                 index++;
+
             }
         }
 /************************************************************************************************************************/
@@ -518,8 +518,4 @@ std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourc
                     tile.g = tile.movementPoints;
                 }
 
-
-
-
-    return hexs;
 }

@@ -144,10 +144,11 @@ class AIBoat : public sf::Sprite
         int x;
         int y;
         int z;
+        int speed;
         std::vector<hexagon*> currentPath;
 
         AIBoat(sf::Texture &texture, std::vector<hexagon> &hexs, std::vector< std::vector<hexagon*> > &townPaths);
-        bool moveNext(std::vector<hexagon> &hexs, int &gridSize);
+        bool moveNext(void);
 };
 
 class hudClass
@@ -181,7 +182,7 @@ class pathParameters
         std::vector<hexagon> hexs;
         int gridSize;
 
-        pathParameters(hexagon* town1, hexagon* town2, std::vector<hexagon> &hexs, int gridSize);
+        pathParameters(hexagon* town1, hexagon* town2, std::vector<hexagon> hexs, int gridSize);
         pathParameters(void);
 };
 
@@ -214,17 +215,19 @@ class townWindow
 
 void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, player &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats);
 
-std::vector<hexagon> genGrid(int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats);
+void genGrid(std::vector<hexagon> &hexs, int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats);
 
 std::vector<resourceClass> loadResources(void);
 std::vector<textureClass> loadTextures(void);
 
 //std::vector<hexagon*> findPath(hexagon* currentTile, hexagon* tileTo, std::vector<hexagon> &hexs, int gridSize);
-std::vector<hexagon*> findPath(pathParameters &params);
+std::vector<hexagon*> findPath(pathParameters params);
 void playerMovement(parameters p);
 
 void genTownWindow(hexWindow &window);
 
+///Path Generation
+std::vector<std::vector<hexagon*> > initPathGen(std::vector<townClass> towns, std::vector<hexagon> hexs, int gridSize, std::vector<int> &edgeTiles);
 bool compHexs(const hexagon* a, const hexagon* b);
 bool inVector(std::vector<hexagon*> vec, hexagon* adj);
 

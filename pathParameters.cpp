@@ -1,6 +1,6 @@
 #include "custom.h"
 
-pathParameters::pathParameters(hexagon* tile1, hexagon* tile2, std::vector<hexagon> &hexs/*CHANGE THIS BACK!!!!!!!*/, int gridSize)
+pathParameters::pathParameters(hexagon* tile1, hexagon* tile2, std::vector<hexagon> hexs, int gridSize)
 {
     this->tile1 = tile1;
     this->tile2 = tile2;

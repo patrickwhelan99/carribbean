@@ -23,7 +23,7 @@ void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std
                     {
                         camera.setCenter(camera.getCenter().x + 7*300, camera.getCenter().y);
                     }
-
+/*
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
                     {
                         camera.rotate(-45);
@@ -33,7 +33,7 @@ void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std
                     {
                         camera.rotate(45);
                     }
-
+*/
                         // Zooming
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::PageDown))
                     {

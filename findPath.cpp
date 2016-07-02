@@ -22,11 +22,12 @@ std::vector<hexagon*> buildPath(hexagon* tile)
     }
 
     path.push_back(tile);
+    std::reverse(path.begin(), path.end());
 
     return path;
 }
 
-std::vector<hexagon*> findPath(pathParameters &params)
+std::vector<hexagon*> findPath(pathParameters params)
 {
     /*
     *** F represents a heurastic calculation for the path whilst G is the current known 'cost'
@@ -47,7 +48,7 @@ std::vector<hexagon*> findPath(pathParameters &params)
     params.tile1->g = 0;
     openVec.push_back(params.tile1);
 
-    ///Main variable for loop; tile currently being used
+    ///Main variable for loop; tile currently being used, it's adjecent tiles will be evaluated
     hexagon* currentTile;
 
     ///********************MAIN LOOP********************///
@@ -66,7 +67,16 @@ std::vector<hexagon*> findPath(pathParameters &params)
 
         ///If Current Tile is goal return path
         if(currentTile->index == params.tile2->index)
-            return buildPath(currentTile);
+        {
+            ///Grab the path before deleting as much data as possible; All data must be stored simultaniously due to the futures being collected later; Large maps can lead to a large RAM usage
+            auto ret =  buildPath(currentTile);
+            std::vector<hexagon> a;
+            std::vector<hexagon*> b;
+            params.hexs = a;
+            openVec = b;
+            closedVec = b;
+            return ret;
+        }
 
 
         for(auto &adj : currentTile->adjacentTiles(params.hexs, params.gridSize))
@@ -74,7 +84,7 @@ std::vector<hexagon*> findPath(pathParameters &params)
 
             if(!inVector(closedVec, adj)) /// If not already evaluated (in closed list)
             {
-                if(!inVector(openVec, adj)) /// If not already queued to be evalued (in open list) then add
+                if(!inVector(openVec, adj) && (adj->terrain == sea || adj->terrain == town)) /// If not already queued to be evalued (in open list) then add
                     openVec.push_back(adj);
 
                 int tentativeGScore = currentTile->g + currentTile->distanceTo(adj);
@@ -91,6 +101,8 @@ std::vector<hexagon*> findPath(pathParameters &params)
 
     }
     std::vector<hexagon*> a;
+    printf("FIND PATH FAILED!\n");
+    a.push_back(params.tile1);
     return a;
 }
 

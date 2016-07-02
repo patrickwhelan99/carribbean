@@ -19,6 +19,7 @@ void playerMovement(parameters p)
 {
     for(auto &hexTo : p.hexPath)
     {
+        printf("Hex:\t%i\n", hexTo->index);
         hexTo->hex.setFillColor(sf::Color::Red);
 
         p.character->x = hexTo->x;
