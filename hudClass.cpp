@@ -17,7 +17,6 @@ hudClass::hudClass(sf::View &hudView, sf::Font &mainFont)
     this->moneyText = sf::Text(std::string(""), mainFont);
     this->moneyText.setCharacterSize(10);
     this->moneyText.setStyle(sf::Text::Bold);
-
     this->dateText.setPosition(-390, -450);
     this->nameText.setPosition(-40, -450);
     this->moneyText.setPosition(390, -450);

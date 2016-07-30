@@ -1,17 +1,24 @@
 #include "custom.h"
 #include <iostream>
 
-void genGrid(std::vector<hexagon> &hexs, int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats)
+void genGrid(std::vector<hexagon> &hexs, int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats, std::vector<int> &edgeTiles)
 {
 
 /*******************************************Config Values****************************************************************/
 
-
+// All values range 1-100
     int jungleChance = 40;
     int landChance = 5;
     int sandChance = 65;
     int mountainChance = 10;
-    int townChance = 2;
+    int townChance = 5;
+
+/*******************************************Colour Values****************************************************************/
+    sf::Color englandColour = sf::Color(255, 0, 50, 50);
+    sf::Color portugalColour = sf::Color(255, 50, 255, 50);
+    sf::Color franceColour = sf::Color(0, 255, 255, 50);
+    sf::Color spainColour = sf::Color(255, 255, 50, 50);
+/************************************************************************************************************************/
 
 
 /************************************************************************************************************************/
@@ -47,6 +54,9 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, sf::View &camera, std::ve
                 hexagon.z = (hexagon.x + hexagon.y)*-1;
                 hexagon.index = index;
                 hexs.push_back(hexagon);
+
+                if(n == 0 || n == gridSize-1 || i == 0 || i == gridSize-1)
+                    edgeTiles.push_back(index);
 
                 if((i == gridSize/2) && (n == gridSize/2))
                 {
@@ -357,10 +367,10 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, sf::View &camera, std::ve
                         tile.movementPoints = 1;
                         randNum = rand() % 100 + 1;
                         if (randNum < 25)
-                         {tile.ownerHex.setFillColor(sf::Color(255, 0, 50, 50));    tile.owner = england;}; // England
-                        if (24 < randNum && randNum < 51) {tile.ownerHex.setFillColor(sf::Color(255, 50, 255, 50));    tile.owner = portugal;}; // Portugal
-                        if (50 < randNum && randNum < 76) {tile.ownerHex.setFillColor(sf::Color(0, 255, 255, 50));    tile.owner = france;}; // France
-                        if (75 < randNum && randNum < 101) {tile.ownerHex.setFillColor(sf::Color(255, 255, 50, 50));    tile.owner = spain;}; // Spain
+                         {tile.ownerHex.setFillColor(englandColour);    tile.owner = england;}; // England
+                        if (24 < randNum && randNum < 51) {tile.ownerHex.setFillColor(portugalColour);    tile.owner = portugal;}; // Portugal
+                        if (50 < randNum && randNum < 76) {tile.ownerHex.setFillColor(franceColour);    tile.owner = france;}; // France
+                        if (75 < randNum && randNum < 101) {tile.ownerHex.setFillColor(spainColour);    tile.owner = spain;}; // Spain
 
 
                         std::vector<hexagon*> adjTiles = tile.adjacentTiles(hexs, gridSize);
@@ -496,6 +506,7 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, sf::View &camera, std::ve
                 }
 
                 printf("\n\nCountries:\n\n");
+                printf("%i Towns\n", int(towns.size()-1));
                 for (auto &counter : ownerCounters)
                 {
                     int townsTotal;

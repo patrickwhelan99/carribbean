@@ -1,8 +1,9 @@
 #include "custom.h"
 #include <future>
 #include <iostream>
+#include <cmath>
 
-std::vector<std::vector<hexagon*> > initPathGen(std::vector<townClass> towns, std::vector<hexagon> hexs, int gridSize, std::vector<int> &edgeTiles)
+std::vector<std::vector<hexagon*> > initPathGen(std::vector<hexagon*> towns, std::vector<hexagon> hexs, int gridSize, std::vector<int> &edgeTiles, unsigned threads)
 {
     int pathsInt = static_cast<int>(towns.size());
     printf("Generating %i Paths!\n.... could take a while\n...... go and get a drink? Go outside? Go and visit your grandma? Go on holiday?\n", pathsInt*pathsInt - pathsInt);
@@ -10,26 +11,26 @@ std::vector<std::vector<hexagon*> > initPathGen(std::vector<townClass> towns, st
     std::vector< std::vector<hexagon*> > townPaths;
     std::vector<std::future< std::vector<hexagon*> > > path;
     pathParameters ppArray[static_cast<int>(towns.size()*towns.size()-towns.size())];
-
     int n = 0;
     int t = 0;
+
     printf("Stage 1:\n"); /// Generate Half of the paths
     for(auto &town1 : towns)
     {
         n=0;
         for(auto &town2 : towns)
         {
-            if(town1.tile && town2.tile)
+            if(town1 && town2)
             {
                 if(n<t)
                 {
                     ///Do nothing will replace with reversed path of one that has already been calculated after future has been resolved
                 }
 
-                else if(town1.tile->index!=town2.tile->index)
+                else if(town1->index!=town2->index)
                 {
-                        hexagon* a = town1.tile;
-                        hexagon* b = town2.tile;
+                        hexagon* a = town1;
+                        hexagon* b = town2;
                         pathParameters p(a, b, hexs, gridSize);
                         ppArray[n] = std::move(p);
                         path.push_back(std::async(std::launch::async, findPath, std::ref(ppArray[n])));
@@ -38,8 +39,8 @@ std::vector<std::vector<hexagon*> > initPathGen(std::vector<townClass> towns, st
             }
         }
 
-        percentageCharted += (1/pathsInt)*100;
-        std::cout << percentageCharted << "%\n";
+        percentageCharted += ((float)1/pathsInt)*100;
+        std::cout << ceil(percentageCharted) << "%\n";
         t++;
     }
 
@@ -49,8 +50,8 @@ std::vector<std::vector<hexagon*> > initPathGen(std::vector<townClass> towns, st
     for(auto &i : path)
     {
         townPaths.push_back(i.get());
-        percentageCharted += 100/(towns.size()*towns.size()-towns.size());
-        std::cout << percentageCharted << "%\n";
+        percentageCharted += (float)100*((float)1/(float)path.size());
+        std::cout << ceil(percentageCharted) << "%\n";
     }
 
 
@@ -67,9 +68,9 @@ std::vector<std::vector<hexagon*> > initPathGen(std::vector<townClass> towns, st
             {
                 for(auto &path : townPaths)
                 {
-                    if(path.size() > 0)
+                    if(static_cast<int>(path.size()) > 0)
                     {
-                        if(path.back()->index == town1.tile->index && path.front()->index == town2.tile->index)
+                        if(path.front() != path.back() && path.back()->index == town1->index && path.front()->index == town2->index)
                         {
                             std::vector<hexagon*> l = path;
                             std::reverse(l.begin(), l.end());
@@ -81,8 +82,8 @@ std::vector<std::vector<hexagon*> > initPathGen(std::vector<townClass> towns, st
             }
             p++;
         }
-        percentageCharted += 200/(towns.size()*towns.size()-towns.size());
-        printf("%f\%\n", percentageCharted);
+        percentageCharted += (float)100/(float)(pathsInt);
+        printf("%f\%\n", ceil(percentageCharted));
         t++;
     }
 

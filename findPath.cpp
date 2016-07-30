@@ -56,7 +56,7 @@ std::vector<hexagon*> findPath(pathParameters params)
     while(openVec.size() > 0)
     {
         ///First sort the openVector
-        std::sort(openVec.begin(), openVec.end(), compHexs);
+        std::sort(openVec.begin(), openVec.end(), compHexs); //CompHexes checks index of tiles and returns bool to sort
 
         ///Grab the lowest F scoring tile in the open list; then remove it from the open list and add it to the closed list
         currentTile = openVec.at(0);

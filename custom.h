@@ -212,23 +212,33 @@ class townWindow
         void update(hexagon* hexagon, std::vector<townClass> &towns);
 };
 
+///Initial Setup
+    ///Camera & Views
+    void cameraInit(sf::View &camera, sf::View &hudView, sf::RenderWindow &app, sf::Font &mainFont, int gridSize);
+    void genTownWindow(hexWindow &window);
+    ///Loading Extern Files
+    std::vector<resourceClass> loadResources(void);
+    std::vector<textureClass> loadTextures(void);
+    ///Grid Generation & Pathfinding
+    void genGrid(std::vector<hexagon> &hexs, int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats, std::vector<int> &edgeTiles);
+    std::vector<hexagon*> popTownTiles(std::vector<townClass> &towns, std::vector<hexagon> &hexs, std::vector<int> &edgeTiles);
+    std::vector<std::vector<hexagon*> > initPathGen(std::vector<hexagon*> towns, std::vector<hexagon> hexs, int gridSize, std::vector<int> &edgeTiles, unsigned threads);
+    ///AIBoats
+    void spawnBoats(std::vector<textureClass> &textures, std::vector<AIBoat> &AIBoats, std::vector<hexagon> &hexs, std::vector<std::vector<hexagon*> > &townPaths);
 
+///EventHandler
+void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, townWindow &townWindow, hexWindow &window, player &player, int gridSize, sf::View &camera, std::vector<townClass> &towns, int daySpeed);
+///Camera & Views
 void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, player &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats);
-
-void genGrid(std::vector<hexagon> &hexs, int gridSize, sf::View &camera, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats);
-
-std::vector<resourceClass> loadResources(void);
-std::vector<textureClass> loadTextures(void);
-
-//std::vector<hexagon*> findPath(hexagon* currentTile, hexagon* tileTo, std::vector<hexagon> &hexs, int gridSize);
+///Time Handling
+void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vector<hexagon*> > &townPaths, Date &date, bool &monthTick, bool &yearTick);
+void monthtick(std::vector<townClass> &towns, std::vector<hexagon> &hexs);
+void yeartick(void);
+///Path finding
 std::vector<hexagon*> findPath(pathParameters params);
 void playerMovement(parameters p);
-
-void genTownWindow(hexWindow &window);
-
-///Path Generation
-std::vector<std::vector<hexagon*> > initPathGen(std::vector<townClass> towns, std::vector<hexagon> hexs, int gridSize, std::vector<int> &edgeTiles);
 bool compHexs(const hexagon* a, const hexagon* b);
 bool inVector(std::vector<hexagon*> vec, hexagon* adj);
+
 
 #endif // CUSTOM_H_INCLUDED
