@@ -1,0 +1,15 @@
+cocaTexture, coca.png
+fishTexture, fish.png
+cattleTexture, cattle.png
+horsesTexture, horses.png
+metalsTexture, metals.png
+wheatTexture, wheat.png
+tobaccoTexture, tobacco.png
+cottonTexture, cotton.png
+boatTexture, boat.png
+populationTexture, population.png
+foodTexture, food.png
+productionTexture, production.png
+manpowerTexture, manpower.png
+breweryTexture, brewery.png
+incomeTexture, income.png

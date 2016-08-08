@@ -1,0 +1,4 @@
+England, english, 255|0|50
+France, french, 0|255|255
+Portugal, portugeese, 25|100|25
+Spain, spanish, 255|255|50

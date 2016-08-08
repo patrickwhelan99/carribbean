@@ -1,0 +1,2 @@
+Cigar, Cigar, 1000, 20, cigarTexture, tobacco|tobacco|tobacco
+

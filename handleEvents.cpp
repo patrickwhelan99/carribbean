@@ -104,6 +104,8 @@ sf::Event event;
 
                             if(townWindow.display)
                                 townWindow.display = false;
+                            if(townWindow.displayBuildingMenu)
+                                townWindow.displayBuildingMenu = false;
 
                             window.hex = &tile;
                             window.infoText.setString(window.genString());

@@ -40,7 +40,6 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, int seed, sf::View &camer
                 hexagon.y = gridSize - n;
                 hexagon.z = (hexagon.x + hexagon.y)*-1;
                 hexagon.index = index;
-                hexagon.resource = resources.at(0); // Default | none
                 hexs.push_back(hexagon);
 
                 if(n == 0 || n == gridSize-1 || i == 0 || i == gridSize-1)

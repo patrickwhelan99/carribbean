@@ -1,0 +1,2 @@
+Brewery, It's gonna get lairy, breweryTexture, 2, 0, 0, wheat|wheat|wheat
+Tavern, It's kicking off Pru!, breweryTexture, 3, 0, 0, wheat
