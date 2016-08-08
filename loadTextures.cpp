@@ -20,18 +20,11 @@ std::vector<textureClass> loadTextures(void)
                 newTexture.name = "none";
 
                     std::string token = line.substr(0, line.find(", "));
+                    newTexture.name = token;
                     line.erase(0, line.find(", ") + 2);
 
-                        newTexture.name = token;
-
-
-                    token = line.substr(0, line.find(", "));
-                    line.erase(0, line.find(", ") + 2);
-
-                        newTexture.loadFromFile(token);
-
-
-
+                    token = line.substr(0, line.find("/n"));
+                    newTexture.loadFromFile(token);
 
 
                 if (newTexture.name != "none")
@@ -40,7 +33,7 @@ std::vector<textureClass> loadTextures(void)
     }
     else
     {
-       printf("Failed to Load resources.txt!\n");
+       printf("Failed to Load textures.txt!\n");
     }
 
     return textures;

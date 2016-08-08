@@ -28,5 +28,5 @@ hexWindow::~hexWindow()
 
 std::string hexWindow::genString()
 {
-    return std::string("Owner: ") + std::to_string(this->hex->owner) + std::string("\nX: ") + std::to_string(this->hex->x) + std::string("\nY: ") + std::to_string(this->hex->y) + std::string("\nZ: ") + std::to_string(this->hex->z) + std::string("\nResource: ") + this->hex->resource.name + std::string("\nFood: ") + std::to_string(this->hex->resource.food) + std::string("\nProduction: ") + std::to_string(this->hex->resource.production);
+    return std::string("Owner: ") + this->hex->owner + std::string("\nX: ") + std::to_string(this->hex->x) + std::string("\nY: ") + std::to_string(this->hex->y) + std::string("\nZ: ") + std::to_string(this->hex->z) + std::string("\nResource: ") + this->hex->resource.name + std::string("\nFood: ") + std::to_string(this->hex->resource.food) + std::string("\nProduction: ") + std::to_string(this->hex->resource.production);
 }

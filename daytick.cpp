@@ -6,6 +6,7 @@ void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vecto
     ///Update Hud info
     HUD.dateStr = date.update(monthTick, yearTick);
 
+
     ///Move AI Boats
     for(auto &boat : AIBoats)
     {

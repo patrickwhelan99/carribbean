@@ -7,6 +7,8 @@ std::vector<resourceClass> loadResources(void)
         printf("Loading Resources...\n");
 
     std::vector<resourceClass> resources;
+    resourceClass none;
+    resources.push_back(none);
 
     std::ifstream resourceCfg;
     resourceCfg.open("resources.txt");
@@ -41,7 +43,7 @@ std::vector<resourceClass> loadResources(void)
                     if(n == i-3)
                         newResource.food = atoi(token.c_str());
 
-                    if(n == i-4)
+                    if(n <= i-4)
                         newResource.production = atoi(token.c_str());
 
                         if(token == "sea")

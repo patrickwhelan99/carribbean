@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <math.h>
 
-void monthtick(std::vector<townClass> &towns, std::vector<hexagon> &hexs)
+void monthtick(std::vector<townClass> &towns, std::vector<hexagon> &hexs, std::vector<resourceClass> resources)
 {
     for(auto &town : towns)
         {
@@ -16,8 +16,9 @@ void monthtick(std::vector<townClass> &towns, std::vector<hexagon> &hexs)
                 int newSize = floor(town.population/100);
                 for(auto &tile : hexs)
                 {
-                    if(tile.distanceTo(town.tile) <= newSize && tile.owner == noOne && newSize < 11)
+                    if(tile.distanceTo(town.tile) <= newSize && tile.owner == "noOne" && newSize < 11)
                     {
+                        town.ownedTiles.push_back(&tile);
                         tile.owner = town.tile->owner;
                         sf::Color colour = town.tile->ownerHex.getFillColor();
                         tile.ownerHex.setFillColor(colour);
@@ -27,8 +28,5 @@ void monthtick(std::vector<townClass> &towns, std::vector<hexagon> &hexs)
                     }
                 }
             }
-
-
-            printf("Pop: %i\nMen: %i\n\n", town.population, town.manPower);
         }
 }

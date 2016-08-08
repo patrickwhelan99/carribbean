@@ -14,7 +14,7 @@ std::vector<std::vector<hexagon*> > initPathGen(std::vector<hexagon*> towns, std
     int n = 0;
     int t = 0;
 
-    printf("Stage 1:\n"); /// Generate Half of the paths
+    printf("Stage 1/3:\n"); /// Generate Half of the paths
     for(auto &town1 : towns)
     {
         n=0;
@@ -46,7 +46,7 @@ std::vector<std::vector<hexagon*> > initPathGen(std::vector<hexagon*> towns, std
 
     percentageCharted = 0;
 
-    printf("Stage 2:\n"); /// Gather all the futures!
+    printf("Stage 2/3:\n"); /// Gather all the futures!
     for(auto &i : path)
     {
         townPaths.push_back(i.get());
@@ -55,7 +55,7 @@ std::vector<std::vector<hexagon*> > initPathGen(std::vector<hexagon*> towns, std
     }
 
 
-    printf("Stage 3:\n"); /// Copy and reverse 1st half of paths to get 2nd half
+    printf("Stage 3/3:\n"); /// Copy and reverse 1st half of paths to get 2nd half
     t = 0;
     percentageCharted = 0;
     for(auto &town1 : towns)

@@ -9,7 +9,7 @@ hexagon::hexagon()
     this->ownerHex = sf::CircleShape(25*200, 6);
     this->ownerHex.setFillColor(sf::Color(255, 255, 255));
     this->terrain = sea;
-    this->owner = noOne;
+    this->owner = "noOne";
     this->resourceIcon = sf::CircleShape(15*200, 6);
     this->x = 0;
     this->y = 0;
@@ -18,7 +18,7 @@ hexagon::hexagon()
     this->h = 0;
     this->movementPoints = 1;
     this->parent = nullptr;
-    this->town = nullptr;
+    this->townOnTile = nullptr;
 }
 
 std::vector<hexagon*> hexagon::adjacentTiles(std::vector<hexagon> &hexs, int gridSize)
@@ -88,6 +88,57 @@ std::vector<hexagon*> hexagon::adjacentTiles(std::vector<hexagon> &hexs, int gri
     return adjHexs;
 }
 
+adjTileCounter hexagon::countAdjacentTiles(std::vector<hexagon> &hexs, int gridSize)
+{
+    int adjSea = 0;
+    int adjLand = 0;
+    int adjSand = 0;
+    int adjTown = 0;
+    int adjLake = 0;
+    int adjMountain = 0;
+    int adjJungle = 0;
+
+    for(auto &adjTile : this->adjacentTiles(hexs, gridSize))
+    {
+        switch (adjTile->terrain)
+        {
+            case sea:
+                adjSea++;
+                break;
+
+            case land:
+                adjLand++;
+                break;
+
+            case sand:
+                adjSand++;
+                break;
+
+            case town:
+                adjTown++;
+                break;
+
+            case lake:
+                adjLake++;
+                break;
+
+            case mountain:
+                adjMountain++;
+                break;
+
+            case jungle:
+                adjJungle++;
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    adjTileCounter newCounter(adjSea, adjLand, adjSand, adjJungle, adjLake, adjTown, adjMountain);
+    return newCounter;
+}
 
 int hexagon::distanceTo(hexagon* to)
 {
