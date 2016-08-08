@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <future>
 
-void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, townWindow &townWindow, hexWindow &window, player &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources)
+void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources)
 {
 sf::Event event;
         while (app.pollEvent(event))
@@ -123,20 +123,9 @@ sf::Event event;
                         {
                             if(tile.hex.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
                             {
-
-                                parameters p; // may only pass one object as paramater to async :'(
-                                hexagon* town2 = &hexs.at(tile.index);
-
-                                pathParameters pp(player.currentHex, town2, hexs, gridSize);
-                                std::future< std::vector<hexagon*> > future = std::async(std::launch::async, findPath, std::ref(pp));
-                                p.hexPath = future.get();
-
-                                p.character = &player;
-                                p.daySpeed = daySpeed;
-
-                                std::async(std::launch::async, playerMovement, p);
-                                break;
-
+                                player.currentPath = std::vector<hexagon*>(); // clear current path
+                                pathParameters p(player.currentHex, &tile, hexs, gridSize);
+                                player.currentPath = findPath(p);
                             }
                         }
                 }

@@ -28,10 +28,14 @@ int main(int argc, char* argv[])
     /// Setup initial gridSize
     int gridSize=50; //100 default reduced for testing
     int seed=time(NULL); // default seed for rand, gets current time unless overridden by arg
+    std::string playerName;
     if(argc > 1)
         gridSize = atoi(argv[1]);
     if(argc > 2)
         seed = atoi(argv[2]);
+    if(argc > 3)
+        playerName = argv[3];
+
 
     ///  Setup Cameras
     sf::View camera;
@@ -91,7 +95,7 @@ int main(int argc, char* argv[])
     ///Setup Player
     sf::Texture playerTexture;
     playerTexture.loadFromFile("tobacco.png");
-    player player(playerTexture, hexs);
+    playerClass player(playerTexture, hexs, playerName, towns);
 
     /// Setup HUD & windows
     hudClass HUD(hudView, mainFont);
@@ -123,7 +127,7 @@ int main(int argc, char* argv[])
         duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
         if(duration >= daySpeed) /// every daytick (a second)
         {
-            daytick(HUD, AIBoats, townPaths, date, monthTick, yearTick);
+            daytick(HUD, AIBoats, townPaths, date, monthTick, yearTick, player);
             duration = 0;
             start = std::clock();
         }

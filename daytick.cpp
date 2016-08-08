@@ -1,11 +1,13 @@
 #include "custom.h"
 #include <random>
 
-void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vector<hexagon*> > &townPaths, Date &date, bool &monthTick, bool &yearTick)
+void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vector<hexagon*> > &townPaths, Date &date, bool &monthTick, bool &yearTick, playerClass &player)
 {
     ///Update Hud info
     HUD.dateStr = date.update(monthTick, yearTick);
 
+    ///Move Player
+    player.moveNext();
 
     ///Move AI Boats
     for(auto &boat : AIBoats)

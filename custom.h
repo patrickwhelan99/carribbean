@@ -180,16 +180,20 @@ class Date
         std::string update(bool &monthTick, bool &yearTick);
 };
 
-class player : public sf::Sprite
+class playerClass : public sf::Sprite
 {
     public:
         int money;
         std::string name;
-        player(sf::Texture &texture, std::vector<hexagon> &hexs);
+        std::vector<hexagon*> currentPath;
         hexagon* currentHex;
         int x;
         int y;
         int z;
+        int speed;
+
+        playerClass(sf::Texture &texture, std::vector<hexagon> &hexs, std::string &name, std::vector<townClass> &towns);
+        void moveNext(void);
 };
 
 class AIBoat : public sf::Sprite
@@ -219,14 +223,14 @@ class hudClass
         sf::Text nameText;
 
         hudClass(sf::View &hudView, sf::Font &mainFont);
-        void update(player &player, Date &date);
+        void update(playerClass &player, Date &date);
 };
 
 class parameters
 {
     public:
         std::vector<hexagon*> hexPath;
-        player* character;
+        playerClass* character;
         double daySpeed;
 };
 
@@ -352,11 +356,11 @@ class townWindow
     void spawnBoats(std::vector<textureClass> &textures, std::vector<AIBoat> &AIBoats, std::vector<hexagon> &hexs, std::vector<std::vector<hexagon*> > &townPaths);
 
 ///EventHandler
-void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, townWindow &townWindow, hexWindow &window, player &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources);
+void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources);
 ///Camera & Views
-void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, player &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats, buildingMenuClass buildingMenu);
+void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, playerClass &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats, buildingMenuClass buildingMenu);
 ///Time Handling
-void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vector<hexagon*> > &townPaths, Date &date, bool &monthTick, bool &yearTick);
+void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vector<hexagon*> > &townPaths, Date &date, bool &monthTick, bool &yearTick, playerClass &player);
 void monthtick(std::vector<townClass> &towns, std::vector<hexagon> &hexs, std::vector<resourceClass> resources);
 void yeartick(void);
 ///Path finding

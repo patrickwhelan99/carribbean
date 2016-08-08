@@ -22,7 +22,7 @@ hudClass::hudClass(sf::View &hudView, sf::Font &mainFont)
     this->moneyText.setPosition(390, -450);
 }
 
-void hudClass::update(player &player, Date &date)
+void hudClass::update(playerClass &player, Date &date)
 {
 
     this->dateText.setString(this->dateStr);
