@@ -3,6 +3,8 @@
 
 void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, playerClass &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats, buildingMenuClass buildingMenu)
 {
+            if(app.hasFocus())
+            {
                             // Camera Movement
                     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
                     {
@@ -44,7 +46,7 @@ void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std
                     {
                         camera.setSize(camera.getSize().x*0.99, camera.getSize().y*0.99);
                     }
-
+            }
                     // Needed to update view
                     app.setView(camera);
 
@@ -118,4 +120,5 @@ void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std
         app.display();
 
     app.setView(camera);
+
 }

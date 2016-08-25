@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <fstream>
 
-townClass::townClass(hexagon* tile, std::vector<hexagon*> &adjTiles, std::vector<hexagon> &hexs, int gridSize)
+townClass::townClass(hexagon* tile, std::vector<hexagon*> &adjTiles, std::vector<hexagon> &hexs, int gridSize, std::vector<goodClass> &goods)
 {
     this->income = 2;
     this->expenditure = 0;
@@ -17,6 +17,9 @@ townClass::townClass(hexagon* tile, std::vector<hexagon*> &adjTiles, std::vector
 
     for(auto &t : this->tile->adjacentTiles(hexs, gridSize))
         this->ownedTiles.push_back(t);
+
+    for(auto &g : goods)
+        this->goods.push_back(g);
 }
 
 int townClass::resourceCount(resourceClass resource)
@@ -63,4 +66,76 @@ void townClass::setTownName(std::vector<townClass> &towns)
         else this->name = std::string("NO_MORE_NAMES!");
 
 
+}
+
+void townClass::monthTick(std::vector<hexagon> &hexs)
+{
+            this->population += (this->food-(this->population/100))*5;
+            if(this->manPower < this->population/7)
+                this->manPower += this->population/12;
+            if(this->manPower > this->population/7)
+                this->manPower = this->population/7;
+
+            if(floor(this->population/100) > this->townSize)
+            {
+                int newSize = floor(this->population/100);
+                for(auto &tile : hexs)
+                {
+                    if(tile.distanceTo(this->tile) <= newSize && tile.owner == "noOne" && newSize < 11)
+                    {
+                        this->ownedTiles.push_back(&tile);
+                        tile.owner = this->tile->owner;
+                        sf::Color colour = this->tile->ownerHex.getFillColor();
+                        tile.ownerHex.setFillColor(colour);
+                        this->food += tile.resource.food;
+                        this->production += tile.resource.production;
+
+                    }
+                }
+            }
+}
+
+void townClass::generateTradeDeals(std::vector<goodClass> &goods, std::vector<std::vector<hexagon*> > &townPaths)
+{
+    this->openDeals = std::vector<tradeDealClass>();
+
+    for(auto &tp : townPaths)
+    {
+        if(tp.at(0)->index == this->tile->index)
+        {
+            for(auto &g : goods)
+            {
+                if(g.name != "none")
+                {
+                    std::string tradeName = g.name;
+
+                    if(tp.size() > 1)
+                    {/*
+                        if(tp.back()->townOnTile != nullptr)
+                            tradeName = g.name + std::string(" from ") + this->name + std::string(" to ") + std::string(tp.back()->townOnTile->name);
+                        else
+                            tradeName = g.name + std::string(" from ") + this->name + std::string(" to unknown");
+                    */}
+
+                    float tradeVolMultiplier = float(rand() % 5 + 20) / float(1000);
+                    float tradeVolume = tradeVolMultiplier*g.stdNum;
+
+                    int freqNum = rand() % 5 + 0;
+                    timeFrequency tradeFreq = static_cast<timeFrequency>(freqNum);
+
+                    float priceMultiplier = float(rand() % 75 + 98) / float(100);
+                    double tradePrice = double(g.price) * double(priceMultiplier) * double(tradeVolume);
+
+                    tradeDealClass newTradeDeal(tradeName, g, tradeVolume, tradePrice, tradeFreq);
+                    this->openDeals.push_back(newTradeDeal);
+                }
+            }
+        }
+    }
+
+    std::random_shuffle(this->openDeals.begin(), this->openDeals.end());
+    this->openDeals.erase(this->openDeals.begin()+3, this->openDeals.end());
+    printf("\n\n%s\n%s\n", this->name.c_str(), std::string(50, '*').c_str());
+    for(auto &od : this->openDeals)
+        printf("%s\t%f\tfor\t%i %s\n", od.name.c_str(), od.payment, static_cast<int>(od.tradeGoodVolume), od.tradeGood.unit.c_str());
 }

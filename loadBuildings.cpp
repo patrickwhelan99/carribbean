@@ -2,7 +2,7 @@
 #include <iostream>
 #include <fstream>
 
-std::vector<buildingClass> loadBuildings(std::vector<resourceClass> &resources)
+std::vector<buildingClass> loadBuildings(std::vector<resourceClass> &resources, std::vector<goodClass> &goods)
 {
         printf("Loading Buildings!...\n");
 
@@ -45,6 +45,23 @@ std::vector<buildingClass> loadBuildings(std::vector<resourceClass> &resources)
                     token = line.substr(0, line.find(", "));
                     line.erase(0, line.find(", ") + 2);
                     newBuilding.manpowerOutput = atoi(token.c_str());
+
+                    token = line.substr(0, line.find(", "));
+                    line.erase(0, line.find(", ") + 2);
+                    bool success = false;
+                    for(auto &g : goods)
+                        if(g.name == token)
+                        {
+                            newBuilding.outputGood = g;
+                            success = true;
+                        }
+
+                    if(!success)
+                        printf("ERROR: Loading Building: %s:\t%s is not a good!\n", newBuilding.name.c_str(), token.c_str());
+
+                    token = line.substr(0, line.find(", "));
+                    line.erase(0, line.find(", ") + 2);
+                    newBuilding.outputGoodVolume = atoi(token.c_str());
 
                     ///Last Token is required materials to make Building
                     auto n = std::count(line.begin(), line.end(), '|');
