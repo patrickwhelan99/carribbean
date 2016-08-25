@@ -11,5 +11,4 @@ void cameraInit(sf::View &camera, sf::View &hudView, sf::RenderWindow &app, sf::
     hudView.setCenter(0, 0);
 ///Setup Fonts
     mainFont.loadFromFile("DroidSans.ttf");
-
 }

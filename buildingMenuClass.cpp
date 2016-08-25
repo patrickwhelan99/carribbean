@@ -107,15 +107,21 @@ void buildingMenuClass::update(std::vector<buildingClass> &buildings, std::vecto
 
 }
 
-void buildingMenuClass::buildBuilding(std::vector<buildingClass> &buildings, std::vector<resourceClass> &resources, std::vector<townClass> &towns)
+void buildingMenuClass::buildBuilding(std::vector<buildingClass> &buildings, std::vector<resourceClass> &resources, std::vector<townClass> &towns, std::vector<goodClass> goods)
 {
     buildingClass building = buildings.at(this->index);
     bool canBuild = true;
 
+///Check if building already built in town
+    for(auto &b : this->parent->currentTown->buildings)
+    {
+        if(building.name == b.name)
+            canBuild = false;
+    }
+
 ///Check if town has resources neccesary
     for(auto &r : resources)
     {
-
         int (townClass::*fPtr) (resourceClass resource);
         fPtr = &townClass::resourceCount;
         int a = (this->parent->currentTown->*fPtr)(r);
@@ -129,6 +135,20 @@ void buildingMenuClass::buildBuilding(std::vector<buildingClass> &buildings, std
         if(a < b)
             canBuild = false;
     }
+
+///Check if town is producting enough goods for building
+
+
+            for(auto &good : this->parent->currentTown->goods)
+            {
+                if(building.outputGood.name == good.name)
+                {
+                    if(building.outputGoodVolume < good.num)
+                        canBuild = false;
+                    break;
+                }
+
+            }
 
 ///If so remove resources and add building to towns vector
     if(canBuild)
@@ -148,11 +168,6 @@ void buildingMenuClass::buildBuilding(std::vector<buildingClass> &buildings, std
             {
                 for(auto &t : this->parent->currentTown->ownedTiles)
                 {
-
-                    printf("%s\n", this->parent->currentTown->name.c_str());
-                    printf("n:\t%i\nb:\t%i\n", n, b);
-                    printf("TNAME:\t%s\nRESNAME:\t%s\n", t->resource.name.c_str(), resource.name.c_str());
-
                     if(t->resource.name == resource.name)
                     {
                         t->resource = resources.at(0);

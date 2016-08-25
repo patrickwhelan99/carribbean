@@ -1,20 +1,5 @@
 #include "custom.h"
 
-#include <SFML/Graphics.hpp>
-#include <iostream>
-
-/* The following are for rand*/
-#include <stdlib.h>
-#include <random>
-#include <time.h>
-/*---------------------------*/
-#include <fstream>
-#include <ctime> // for clock
-#include <algorithm> // for clock
-#include <thread>
-#include <cmath>
-#include <future>
-
 int main(int argc, char* argv[])
 {
     /// Create the main window
@@ -22,7 +7,7 @@ int main(int argc, char* argv[])
 
     /// Gather available threads
     unsigned threads = std::thread::hardware_concurrency();
-    if(threads==0){threads=2;} // 0 Returned if # of threads undetectable, in such a case future code is unusable so threads must be set to > 1
+    if(threads==0){threads=1;} // 0 Returned if # of threads undetectable, in such a case future code is unusable so threads must be set
     printf("\n\n\tFound %u threads\n\n", threads);
 
     /// Setup initial gridSize
@@ -36,6 +21,9 @@ int main(int argc, char* argv[])
     if(argc > 3)
         playerName = argv[3];
 
+    if(gridSize % 2 != 0)
+        gridSize += 1; // Gridsize must be even for adjacent Tile calculations
+
 
     ///  Setup Cameras
     sf::View camera;
@@ -43,6 +31,8 @@ int main(int argc, char* argv[])
     sf::Font mainFont;
     cameraInit(camera, hudView, app, mainFont, gridSize);
 
+    /// Load Terrain Types
+    std::vector<terrainClass> terrains = loadTerrains();
 
     ///  Load nations, textures, resources & goods using *.txt files
     std::vector<nationClass> nations = loadNations();
@@ -51,15 +41,16 @@ int main(int argc, char* argv[])
     std::vector<textureClass> textures = loadTextures();
     if(textures.size() == 0)
         app.close();
-    std::vector<resourceClass> resources = loadResources();
+    std::vector<resourceClass> resources = loadResources(terrains);
     if(resources.size() == 0)
         app.close();
     std::vector<goodClass> goods = loadGoods(resources);
     if(goods.size() == 0)
         app.close();
-    std::vector<buildingClass> buildings = loadBuildings(resources);
-    if(goods.size() == 0)
+    std::vector<buildingClass> buildings = loadBuildings(resources, goods);
+    if(buildings.size() == 0)
         app.close();
+
 
 ///  Generate the grid
         //  Setup timer
@@ -72,7 +63,7 @@ int main(int argc, char* argv[])
     std::vector<townClass> towns;
     std::vector<AIBoat> AIBoats;
     std::vector<int> edgeTiles;
-    genGrid(hexs, gridSize, seed, camera, nations, resources, textures, towns, AIBoats, edgeTiles);
+    genGrid(hexs, gridSize, seed, camera, nations, resources, textures, towns, AIBoats, edgeTiles, goods);
 
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
     std::cout << "Generation Time: "<< duration/4 << "s\n" << std::endl;
@@ -89,13 +80,14 @@ int main(int argc, char* argv[])
     duration = (( std::clock() - start ) / (double) CLOCKS_PER_SEC)/4;
     std::cout << "Charting Time: "<< duration/4 << "s\n" << std::endl;
 
+
     ///Spawn AI
-    spawnBoats(textures, AIBoats, hexs, townPaths);
+    spawnBoats(textures, AIBoats, hexs, townPaths, towns, goods);
 
     ///Setup Player
     sf::Texture playerTexture;
     playerTexture.loadFromFile("tobacco.png");
-    playerClass player(playerTexture, hexs, playerName, towns);
+    playerClass player(playerTexture, hexs, playerName, towns, goods);
 
     /// Setup HUD & windows
     hudClass HUD(hudView, mainFont);
@@ -114,7 +106,7 @@ int main(int argc, char* argv[])
     /// Game loop
     while (app.isOpen())
     {
-        handleEvents(app, hexs, townWindow, window, player, gridSize, camera, hudView, towns, daySpeed, buildings, textures, buildingMenu, resources);
+        handleEvents(app, hexs, townWindow, window, player, gridSize, camera, hudView, towns, daySpeed, buildings, textures, buildingMenu, resources, goods);
 
 
         ///Update HUD & camera
@@ -127,7 +119,7 @@ int main(int argc, char* argv[])
         duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
         if(duration >= daySpeed) /// every daytick (a second)
         {
-            daytick(HUD, AIBoats, townPaths, date, monthTick, yearTick, player);
+            daytick(HUD, AIBoats, townPaths, date, monthTick, yearTick, player, towns, goods);
             duration = 0;
             start = std::clock();
         }
@@ -135,13 +127,16 @@ int main(int argc, char* argv[])
 
         if(monthTick)
         {
-            monthtick(towns, hexs, resources);
+            monthtick(towns, hexs, resources, goods, townPaths);
         }
+
 
         if(yearTick)
         {
             yeartick();
         }
+
+
 
 
     } /// End of Main Loop

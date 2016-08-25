@@ -8,7 +8,7 @@ Date::Date()
     this->month = january;
     this->monthStr = "Jan";
     this->year = 1742;
-    this->monthDay = 1;
+    this->monthDay = 31;
 }
 
 std::string Date::update(bool &monthTick, bool &yearTick)

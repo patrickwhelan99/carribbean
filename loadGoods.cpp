@@ -7,6 +7,9 @@ std::vector<goodClass> loadGoods(std::vector<resourceClass> &resources)
         printf("Loading Goods...\n");
 
     std::vector<goodClass> goods;
+    goodClass newGood; // Default 'NULL' good
+    goods.push_back(newGood);
+
 
     std::ifstream goodCfg;
     goodCfg.open("goods.txt");
@@ -38,6 +41,7 @@ std::vector<goodClass> loadGoods(std::vector<resourceClass> &resources)
                     token = line.substr(0, line.find(", "));
                     line.erase(0, line.find(", ") + 2);
                     newGood.price = atof(token.c_str());
+                    newGood.originalPrice = newGood.price;
 
                     token = line.substr(0, line.find(", "));
                     line.erase(0, line.find(", ") + 2);
@@ -49,19 +53,23 @@ std::vector<goodClass> loadGoods(std::vector<resourceClass> &resources)
                     auto n = std::count(line.begin(), line.end(), '|');
                     for(n;n>=0;n--)
                     {
-                        token = line.substr(0, line.find("|"));
-                        line.erase(0, line.find("|") + 1);
+                        token = line.substr(0, line.find("="));
+                        line.erase(0, line.find("=") + 1);
                         bool isResource = false;
                         for(auto &r : resources)
-                        if(token == r.name)
-                        {
-                            newGood.materials.push_back(token);
-                            isResource = true;
-                            break;
-                        }
+                            if(token == r.name)
+                            {
+                                resourceClass resource = r;
+                                token = line.substr(0, line.find("|"));
+                                line.erase(0, line.find("|") + 1);
+                                resource.num = atoi(token.c_str());
+                                newGood.materials.push_back(resource);
+                                isResource = true;
+                                break;
+                            }
 
-                        if(!isResource)
-                            printf("ERROR: Loading Good: %s:\t%s is not a resource!\n", newGood.name.c_str(), token.c_str());
+                            if(!isResource)
+                                printf("ERROR: Loading Good: %s:\t%s is not a resource!\n", newGood.name.c_str(), token.c_str());
                     }
 
                 if (newGood.name != "none")

@@ -157,18 +157,18 @@ int hexagon::distanceTo(hexagon* to)
     return (distancex+distancey+distancez)/2;
 }
 
-/*
-std::vector<hexagon> hexagon::adjacentTiles(std::vector<hexagon> &hexs)
+
+std::vector<hexagon*> hexagon::adjacentTilesByCoords(std::vector<hexagon> &hexs, int &gridSize)
 {
-    std::vector<hexagon> adjHexs;
+    std::vector<hexagon*> adjHexs;
     for (auto &others : hexs)
     {
         if((others.x == this->x - 1 && others.y == this->y - 1) || (others.x == this->x && others.y == this->y - 1) || (others.x == this->x - 1 && others.y == this->y ) || (others.x == this->x + 1 && others.y == this->y) || (others.x == this->x && others.y == this->y + 1) || (others.x == this->x + 1 && others.y == this->y + 1))
         {
-            adjHexs.push_back(others);
+            adjHexs.push_back(&others);
         }
     }
 
     return adjHexs;
 }
-*/
+

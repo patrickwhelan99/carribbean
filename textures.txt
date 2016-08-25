@@ -13,3 +13,5 @@ productionTexture, production.png
 manpowerTexture, manpower.png
 breweryTexture, brewery.png
 incomeTexture, income.png
+woodTexture, wood.png
+yeastTexture, yeast.png

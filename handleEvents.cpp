@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <future>
 
-void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources)
+void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources, std::vector<goodClass> &goods)
 {
 sf::Event event;
         while (app.pollEvent(event))
@@ -26,6 +26,12 @@ sf::Event event;
                 if(event.key.code == sf::Keyboard::E)
                 {
                     camera.rotate(45);
+                }
+
+                if (event.key.code == sf::Keyboard::F1)
+                {
+                    sf::Image Screen = app.capture();
+                    Screen.saveToFile("screenshot.jpg");
                 }
 
             }
@@ -81,7 +87,7 @@ sf::Event event;
 
                     if(townWindow.displayBuildingMenu && buildingMenu.buildButton.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
                     {
-                        buildingMenu.buildBuilding(buildings, resources, towns);
+                        buildingMenu.buildBuilding(buildings, resources, towns, goods);
                     }
 
                     if(townWindow.displayBuildingMenu && buildingMenu.windowBox.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
@@ -96,6 +102,7 @@ sf::Event event;
 
                             if(tile.terrain == town)
                             {
+                                townWindow.displayBuildingMenu = false;
                                 window.display = false;
                                 townWindow.update(&tile, towns);
                                 townWindow.display = true;
@@ -123,9 +130,7 @@ sf::Event event;
                         {
                             if(tile.hex.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
                             {
-                                player.currentPath = std::vector<hexagon*>(); // clear current path
-                                pathParameters p(player.currentHex, &tile, hexs, gridSize);
-                                player.currentPath = findPath(p);
+                                player.setPath(tile, hexs, gridSize);
                             }
                         }
                 }

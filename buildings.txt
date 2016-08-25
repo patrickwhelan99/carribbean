@@ -1,2 +1,5 @@
-Brewery, It's gonna get lairy, breweryTexture, 2, 0, 0, wheat|wheat|wheat
-Tavern, It's kicking off Pru!, breweryTexture, 3, 0, 0, wheat
+Brewery, It's gonna get lairy, breweryTexture, 0, 0, 0, Beer, 100, wheat
+Tavern, It's kicking off Pru!, breweryTexture, 2, 0, 0, Beer, -60, wheat
+Cigar Factory, Castro style, cigarFactoryTexture, 0, 0, 10, Cigar, 10, tobacco
+Dock, flamable..., dockTexture, 1, 1, 50, Beer, 100, wood
+
