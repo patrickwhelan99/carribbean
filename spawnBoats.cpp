@@ -6,7 +6,7 @@ void spawnBoats(std::vector<textureClass> &textures, std::vector<AIBoat> &AIBoat
     {
         if(texture.name == "boatTexture")
         {
-            for(int i = 0; i<100; i++)
+            for(int i = 0; i<1000; i++)
             {
                 AIBoat newBoat(texture, hexs, townPaths, towns, goods);
                 AIBoats.push_back(newBoat);

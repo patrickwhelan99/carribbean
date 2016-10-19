@@ -15,3 +15,4 @@ breweryTexture, brewery.png
 incomeTexture, income.png
 woodTexture, wood.png
 yeastTexture, yeast.png
+tradeDealButtonTexture, tdb.png

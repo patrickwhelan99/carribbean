@@ -1,0 +1,65 @@
+In file included from /usr/include/c++/6.2.1/x86_64-redhat-linux/bits/c++allocator.h:33:0,
+                 from /usr/include/c++/6.2.1/bits/allocator.h:46,
+                 from /usr/include/c++/6.2.1/string:41,
+                 from server.h:4,
+                 from main.cpp:1:
+/usr/include/c++/6.2.1/ext/new_allocator.h: In instantiation of ‘void __gnu_cxx::new_allocator<_Tp>::construct(_Up*, _Args&& ...) [with _Up = sf::TcpSocket; _Args = {const sf::TcpSocket&}; _Tp = sf::TcpSocket]’:
+/usr/include/c++/6.2.1/bits/alloc_traits.h:455:4:   required from ‘static void std::allocator_traits<std::allocator<_CharT> >::construct(std::allocator_traits<std::allocator<_CharT> >::allocator_type&, _Up*, _Args&& ...) [with _Up = sf::TcpSocket; _Args = {const sf::TcpSocket&}; _Tp = sf::TcpSocket; std::allocator_traits<std::allocator<_CharT> >::allocator_type = std::allocator<sf::TcpSocket>]’
+/usr/include/c++/6.2.1/bits/stl_vector.h:918:30:   required from ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = sf::TcpSocket; _Alloc = std::allocator<sf::TcpSocket>; std::vector<_Tp, _Alloc>::value_type = sf::TcpSocket]’
+main.cpp:31:37:   required from here
+/usr/include/c++/6.2.1/ext/new_allocator.h:120:4: error: use of deleted function ‘sf::TcpSocket::TcpSocket(const sf::TcpSocket&)’
+  { ::new((void *)__p) _Up(std::forward<_Args>(__args)...); }
+    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/SFML/Network/Ftp.hpp:32:0,
+                 from /usr/include/SFML/Network.hpp:33,
+                 from server.h:6,
+                 from main.cpp:1:
+/usr/include/SFML/Network/TcpSocket.hpp:46:24: note: ‘sf::TcpSocket::TcpSocket(const sf::TcpSocket&)’ is implicitly deleted because the default definition would be ill-formed:
+ class SFML_NETWORK_API TcpSocket : public Socket
+                        ^~~~~~~~~
+/usr/include/SFML/Network/TcpSocket.hpp:46:24: error: use of deleted function ‘sf::Socket::Socket(const sf::Socket&)’
+In file included from /usr/include/SFML/Network/TcpSocket.hpp:32:0,
+                 from /usr/include/SFML/Network/Ftp.hpp:32,
+                 from /usr/include/SFML/Network.hpp:33,
+                 from server.h:6,
+                 from main.cpp:1:
+/usr/include/SFML/Network/Socket.hpp:45:24: note: ‘sf::Socket::Socket(const sf::Socket&)’ is implicitly deleted because the default definition would be ill-formed:
+ class SFML_NETWORK_API Socket : NonCopyable
+                        ^~~~~~
+/usr/include/SFML/Network/Socket.hpp:45:24: error: ‘sf::NonCopyable::NonCopyable(const sf::NonCopyable&)’ is private within this context
+In file included from /usr/include/SFML/System/FileInputStream.hpp:34:0,
+                 from /usr/include/SFML/System.hpp:35,
+                 from /usr/include/SFML/Network.hpp:32,
+                 from server.h:6,
+                 from main.cpp:1:
+/usr/include/SFML/System/NonCopyable.hpp:67:5: note: declared private here
+     NonCopyable(const NonCopyable&);
+     ^~~~~~~~~~~
+In file included from /usr/include/c++/6.2.1/bits/stl_tempbuf.h:60:0,
+                 from /usr/include/c++/6.2.1/bits/stl_algo.h:62,
+                 from /usr/include/c++/6.2.1/algorithm:62,
+                 from /usr/include/SFML/System/Utf.hpp:32,
+                 from /usr/include/SFML/System/String.hpp:32,
+                 from /usr/include/SFML/System.hpp:42,
+                 from /usr/include/SFML/Network.hpp:32,
+                 from server.h:6,
+                 from main.cpp:1:
+/usr/include/c++/6.2.1/bits/stl_construct.h: In instantiation of ‘void std::_Construct(_T1*, _Args&& ...) [with _T1 = sf::TcpSocket; _Args = {sf::TcpSocket}]’:
+/usr/include/c++/6.2.1/bits/stl_uninitialized.h:75:18:   required from ‘static _ForwardIterator std::__uninitialized_copy<_TrivialValueTypes>::__uninit_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = std::move_iterator<sf::TcpSocket*>; _ForwardIterator = sf::TcpSocket*; bool _TrivialValueTypes = false]’
+/usr/include/c++/6.2.1/bits/stl_uninitialized.h:126:15:   required from ‘_ForwardIterator std::uninitialized_copy(_InputIterator, _InputIterator, _ForwardIterator) [with _InputIterator = std::move_iterator<sf::TcpSocket*>; _ForwardIterator = sf::TcpSocket*]’
+/usr/include/c++/6.2.1/bits/stl_uninitialized.h:281:37:   required from ‘_ForwardIterator std::__uninitialized_copy_a(_InputIterator, _InputIterator, _ForwardIterator, std::allocator<_Tp>&) [with _InputIterator = std::move_iterator<sf::TcpSocket*>; _ForwardIterator = sf::TcpSocket*; _Tp = sf::TcpSocket]’
+/usr/include/c++/6.2.1/bits/stl_uninitialized.h:303:2:   required from ‘_ForwardIterator std::__uninitialized_move_if_noexcept_a(_InputIterator, _InputIterator, _ForwardIterator, _Allocator&) [with _InputIterator = sf::TcpSocket*; _ForwardIterator = sf::TcpSocket*; _Allocator = std::allocator<sf::TcpSocket>]’
+/usr/include/c++/6.2.1/bits/vector.tcc:422:8:   required from ‘void std::vector<_Tp, _Alloc>::_M_emplace_back_aux(_Args&& ...) [with _Args = {const sf::TcpSocket&}; _Tp = sf::TcpSocket; _Alloc = std::allocator<sf::TcpSocket>]’
+/usr/include/c++/6.2.1/bits/stl_vector.h:924:4:   required from ‘void std::vector<_Tp, _Alloc>::push_back(const value_type&) [with _Tp = sf::TcpSocket; _Alloc = std::allocator<sf::TcpSocket>; std::vector<_Tp, _Alloc>::value_type = sf::TcpSocket]’
+main.cpp:31:37:   required from here
+/usr/include/c++/6.2.1/bits/stl_construct.h:75:7: error: use of deleted function ‘sf::TcpSocket::TcpSocket(sf::TcpSocket&&)’
+     { ::new(static_cast<void*>(__p)) _T1(std::forward<_Args>(__args)...); }
+       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/SFML/Network/Ftp.hpp:32:0,
+                 from /usr/include/SFML/Network.hpp:33,
+                 from server.h:6,
+                 from main.cpp:1:
+/usr/include/SFML/Network/TcpSocket.hpp:46:24: note: ‘sf::TcpSocket::TcpSocket(sf::TcpSocket&&)’ is implicitly deleted because the default definition would be ill-formed:
+ class SFML_NETWORK_API TcpSocket : public Socket
+                        ^~~~~~~~~
+/usr/include/SFML/Network/TcpSocket.hpp:46:24: error: use of deleted function ‘sf::Socket::Socket(const sf::Socket&)’

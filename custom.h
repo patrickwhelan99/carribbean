@@ -108,11 +108,13 @@ class tradeDealClass
 class hexagon;
 class townWindow;
 class buildingMenuClass;
+class tradeDealsWindowClass;
 
 class townClass
 {
     friend townWindow;
     friend buildingMenuClass;
+    friend tradeDealsWindowClass;
 
     public:
         hexagon* tile;
@@ -274,11 +276,15 @@ class AIBoat : public shipClass
             if(this->speed <= 0)
                 printf("%i\n", this->speed);
 
+            this->movementPoints = 0;
+
             for(auto &t : townPaths)
                 if(t.at(0)->index == this->currentHex->index)
                     this->currentPath = t;
         };
 };
+
+class tradeDealsWindowClass;
 
 class hudClass
 {
@@ -291,8 +297,34 @@ class hudClass
         std::string nameStr;
         sf::Text nameText;
 
-        hudClass(sf::View &hudView, sf::Font &mainFont);
+        sf::CircleShape tradeDealsButton;
+        bool showTradeDeals;
+        tradeDealsWindowClass* tradeDealWindow;
+
+        hudClass(sf::View &hudView, sf::Font &mainFont, std::vector<textureClass> &textures);
         void update(playerClass &player, Date &date);
+};
+
+class tradeDealDisplayableClass
+{
+    public:
+        sf::Text dealText;
+        sf::RectangleShape goodPic;
+};
+
+class tradeDealsWindowClass
+{
+    public:
+        sf::RectangleShape window;
+        sf::RectangleShape prevButton;
+        sf::RectangleShape nextButton;
+        sf::Text dealText;
+        std::vector<tradeDealDisplayableClass> deals;
+        int windowTabs;
+        int index;
+
+        tradeDealsWindowClass(sf::Vector2f &spawnButtonPos);
+        void updateDeals(std::vector<townClass> &towns, std::vector<textureClass> &textures, sf::Font &font);
 };
 
 class pathParameters
@@ -400,6 +432,14 @@ class townWindow
         void destroyUnitMenu();
 };
 
+/// Menus
+int mainMenu(sf::RenderWindow &app, unsigned &threads);
+int gameSetup(sf::RenderWindow &app, sf::View &menuView, unsigned &threads);
+
+///Initial Game Setup
+int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &playerName, unsigned &threads);
+
+
 ///Initial Setup
     ///Camera & Views
     void cameraInit(sf::View &camera, sf::View &hudView, sf::RenderWindow &app, sf::Font &mainFont, int gridSize);
@@ -412,16 +452,16 @@ class townWindow
     std::vector<buildingClass> loadBuildings(std::vector<resourceClass> &resources, std::vector<goodClass> &goods);
     ///Grid Generation & Pathfinding
     std::vector<terrainClass> loadTerrains(void);
-    void genGrid(std::vector<hexagon> &hexs, int gridSize, int seed, sf::View &camera, std::vector<nationClass> &nations, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats, std::vector<int> &edgeTiles, std::vector<goodClass> &goods);
+    void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &camera, std::vector<nationClass> &nations, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats, std::vector<int> &edgeTiles, std::vector<goodClass> &goods);
     std::vector<hexagon*> popTownTiles(std::vector<townClass> &towns, std::vector<hexagon> &hexs, std::vector<int> &edgeTiles);
     std::vector<std::vector<hexagon*> > initPathGen(std::vector<hexagon*> towns, std::vector<hexagon> hexs, int gridSize, std::vector<int> &edgeTiles, unsigned threads);
     ///AIBoats
     void spawnBoats(std::vector<textureClass> &textures, std::vector<AIBoat> &AIBoats, std::vector<hexagon> &hexs, std::vector<std::vector<hexagon*> > &townPaths, std::vector<townClass> &towns, std::vector<goodClass> &goods);
 
 ///EventHandler
-void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources, std::vector<goodClass> &goods);
+void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, hudClass &HUD, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources, std::vector<goodClass> &goods, sf::Font &font, bool &paused);
 ///Camera & Views
-void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, playerClass &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats, buildingMenuClass buildingMenu);
+void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, playerClass &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats, buildingMenuClass buildingMenu, tradeDealsWindowClass &tradeDealWindow);
 ///Time Handling
 void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vector<hexagon*> > &townPaths, Date &date, bool &monthTick, bool &yearTick, playerClass &player, std::vector<townClass> &towns, std::vector<goodClass> &goods);
 void monthtick(std::vector<townClass> &towns, std::vector<hexagon> &hexs, std::vector<resourceClass> resources, std::vector<goodClass> &goods, std::vector<std::vector<hexagon*> > &townPaths);

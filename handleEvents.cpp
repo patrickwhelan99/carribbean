@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <future>
 
-void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources, std::vector<goodClass> &goods)
+void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, hudClass &HUD, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources, std::vector<goodClass> &goods, sf::Font &font, bool &paused)
 {
 sf::Event event;
         while (app.pollEvent(event))
@@ -14,8 +14,7 @@ sf::Event event;
             {
                 if(event.key.code == sf::Keyboard::Escape)
                 {
-                    if(window.display)
-                        window.display = false;
+                    paused = !paused;
                 }
 
                 if(event.key.code == sf::Keyboard::Q)
@@ -36,12 +35,41 @@ sf::Event event;
 
             }
 
-            if (event.type == sf::Event::MouseButtonPressed) // Gets tile info
+            if(paused)
+                break;
+
+            if (event.type == sf::Event::MouseButtonPressed)
             {
                 //LMB
                 if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
                 {
                     app.setView(hudView); /// Change apps view so mouse position can be mapped to hud coordinates and not the map's
+
+                    if(HUD.tradeDealsButton.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
+                    {
+                        HUD.showTradeDeals = !HUD.showTradeDeals;
+                        if(HUD.showTradeDeals)
+                        {
+                            HUD.showTradeDeals = true;
+                            HUD.tradeDealWindow->updateDeals(towns, textures, font);
+                        }
+                    }
+
+                    if(HUD.showTradeDeals && HUD.tradeDealWindow->prevButton.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
+                    {
+                        if(HUD.tradeDealWindow->index == 0)
+                            HUD.tradeDealWindow->index = HUD.tradeDealWindow->windowTabs;
+                        else
+                            HUD.tradeDealWindow->index -=1;
+                    }
+
+                    if(HUD.showTradeDeals && HUD.tradeDealWindow->nextButton.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
+                    {
+                        if(HUD.tradeDealWindow->index == HUD.tradeDealWindow->windowTabs)
+                            HUD.tradeDealWindow->index = 0;
+                        else
+                            HUD.tradeDealWindow->index +=1;
+                    }
 
                     if(townWindow.display && townWindow.buildingMenuButton.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
                     {

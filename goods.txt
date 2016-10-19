@@ -1,2 +1,5 @@
-Cigar, Cigar, 1000, 20, cigarTexture, tobacco=1
+Cigar, Boxes, 1000, 20, cigarTexture, tobacco=1
 Beer, Litres, 100000, 3, beerTexture, wheat=1|yeast=1
+Cigarette, Boxes, 1000, 20, cigarTexture, tobacco=1
+Filtered Cigarette, Boxes, 1000, 20, cigarTexture, tobacco=1
+Raw Tobacco, Boxes, 1000, 20, cigarTexture, tobacco=1

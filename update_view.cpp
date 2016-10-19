@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <iostream>
 
-void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, playerClass &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats, buildingMenuClass buildingMenu)
+void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, playerClass &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats, buildingMenuClass buildingMenu, tradeDealsWindowClass &tradeDealWindow)
 {
             if(app.hasFocus())
             {
@@ -115,7 +115,25 @@ void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std
         app.draw(HUD.dateText);
         app.draw(HUD.nameText);
         app.draw(HUD.moneyText);
+        app.draw(HUD.tradeDealsButton);
 
+        if(HUD.showTradeDeals)
+        {
+            app.draw(tradeDealWindow.window);
+            int from = tradeDealWindow.index * 16;
+            int remainder = 16;
+            if(from + remainder > tradeDealWindow.deals.size())
+                remainder = tradeDealWindow.deals.size()-1 - from;
+
+
+            for(int i = from; i<from+remainder; i++)
+            {
+                app.draw(tradeDealWindow.deals.at(i).dealText);
+                app.draw(tradeDealWindow.deals.at(i).goodPic);
+            }
+            app.draw(tradeDealWindow.prevButton);
+            app.draw(tradeDealWindow.nextButton);
+        }
 
         app.display();
 

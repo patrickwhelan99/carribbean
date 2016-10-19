@@ -3,24 +3,32 @@
 int main(int argc, char* argv[])
 {
     /// Create the main window
-    sf::RenderWindow app(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Carribbean"/*, sf::Style::Fullscreen*/);
-
+    sf::RenderWindow app(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Carribbean");//, sf::Style::Fullscreen);
     /// Gather available threads
     unsigned threads = std::thread::hardware_concurrency();
     if(threads==0){threads=1;} // 0 Returned if # of threads undetectable, in such a case future code is unusable so threads must be set
     printf("\n\n\tFound %u threads\n\n", threads);
 
-    /// Setup initial gridSize
+	mainMenu(app, threads);
+
+	return 0;
+}
+
+int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &playerName, unsigned &threads)
+{
+/*
+	/// Setup initial gridSize
     int gridSize=50; //100 default reduced for testing
     int seed=time(NULL); // default seed for rand, gets current time unless overridden by arg
     std::string playerName;
+
     if(argc > 1)
         gridSize = atoi(argv[1]);
     if(argc > 2)
         seed = atoi(argv[2]);
     if(argc > 3)
         playerName = argv[3];
-
+*/
     if(gridSize % 2 != 0)
         gridSize += 1; // Gridsize must be even for adjacent Tile calculations
 
@@ -90,7 +98,10 @@ int main(int argc, char* argv[])
     playerClass player(playerTexture, hexs, playerName, towns, goods);
 
     /// Setup HUD & windows
-    hudClass HUD(hudView, mainFont);
+    hudClass HUD(hudView, mainFont, textures);
+    auto buttonPos = HUD.tradeDealsButton.getPosition() + sf::Vector2f(12.5, 12.5);
+    tradeDealsWindowClass tradeDealsWindow(buttonPos);
+    HUD.tradeDealWindow = &tradeDealsWindow;
     hexWindow window(&(hexs.at(0)), camera, mainFont);
     townWindow townWindow(mainFont, textures);
     buildingMenuClass buildingMenu(townWindow, mainFont);
@@ -102,16 +113,14 @@ int main(int argc, char* argv[])
     start = std::clock();
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
+    bool paused = false;
 
     /// Game loop
     while (app.isOpen())
     {
-        handleEvents(app, hexs, townWindow, window, player, gridSize, camera, hudView, towns, daySpeed, buildings, textures, buildingMenu, resources, goods);
-
-
         ///Update HUD & camera
         HUD.update(player, date);
-        update_view(app, camera, hudView, hexs, window, HUD, player, townWindow, AIBoats, buildingMenu);
+        update_view(app, camera, hudView, hexs, window, HUD, player, townWindow, AIBoats, buildingMenu, tradeDealsWindow);
 
         bool monthTick = false;
         bool yearTick = false;
@@ -136,8 +145,7 @@ int main(int argc, char* argv[])
             yeartick();
         }
 
-
-
+        handleEvents(app, hexs, HUD, townWindow, window, player, gridSize, camera, hudView, towns, daySpeed, buildings, textures, buildingMenu, resources, goods, mainFont, paused); /// Handle Events when paused
 
     } /// End of Main Loop
 
