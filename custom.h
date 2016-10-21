@@ -1,8 +1,12 @@
 #ifndef CUSTOM_H_INCLUDED
 #define CUSTOM_H_INCLUDED
 
-#include <SFML/Graphics.hpp>
 #include <iostream>
+
+
+#include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
+#include "networking.h"
 
 /* The following are for rand*/
 #include <stdlib.h>
@@ -19,10 +23,37 @@
 #include <math.h>
 /*---------------------------*/
 
+
 enum Terrain {none, sea, land, mountain, sand, jungle, town, lake};
 enum Day {monday, tuesday, wednesday, thursday, friday, saturday, sunday};
 enum Month {january, february, march, april, may, june, july, august, september, october, november, december};
 enum timeFrequency {daily, weekly, biweekly, monthly, quarterly, annualy};
+
+
+class worldMenuEntry
+{
+    public:
+        sf::RectangleShape tile;
+        sf::RectangleShape image;
+        std::string nameStr;
+        sf::Text nameText;
+
+        worldMenuEntry(sf::Vector2f &pos, sf::Font &mainFont)
+        {
+            this->tile.setPosition(pos);
+            this->tile.setFillColor(sf::Color(20, 20, 20, 128));
+            this->tile.setSize(sf::Vector2f(300, 300));
+
+            this->image.setPosition(this->tile.getPosition() + sf::Vector2f(25, 25));
+            this->image.setSize(sf::Vector2f(200, 250));
+
+            this->nameStr = "";
+            this->nameText.setPosition(this->image.getPosition() + sf::Vector2f(50, 250));
+            this->nameText.setCharacterSize(20);
+            this->nameText.setColor(sf::Color::White);
+            this->nameText.setFont(mainFont);
+        }
+};
 
 class terrainClass
 {
@@ -276,8 +307,6 @@ class AIBoat : public shipClass
             if(this->speed <= 0)
                 printf("%i\n", this->speed);
 
-            this->movementPoints = 0;
-
             for(auto &t : townPaths)
                 if(t.at(0)->index == this->currentHex->index)
                     this->currentPath = t;
@@ -435,6 +464,7 @@ class townWindow
 /// Menus
 int mainMenu(sf::RenderWindow &app, unsigned &threads);
 int gameSetup(sf::RenderWindow &app, sf::View &menuView, unsigned &threads);
+int worldBrowser(sf::RenderWindow &app, sf::View &menuView);
 
 ///Initial Game Setup
 int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &playerName, unsigned &threads);
@@ -460,6 +490,7 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
 
 ///EventHandler
 void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, hudClass &HUD, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources, std::vector<goodClass> &goods, sf::Font &font, bool &paused);
+
 ///Camera & Views
 void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, playerClass &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats, buildingMenuClass buildingMenu, tradeDealsWindowClass &tradeDealWindow);
 ///Time Handling

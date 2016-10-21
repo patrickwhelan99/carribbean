@@ -1,9 +1,10 @@
 #include "custom.h"
 #include <future>
 
+
 void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, hudClass &HUD, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources, std::vector<goodClass> &goods, sf::Font &font, bool &paused)
 {
-sf::Event event;
+    sf::Event event;
         while (app.pollEvent(event))
         {
             // Close window : exit

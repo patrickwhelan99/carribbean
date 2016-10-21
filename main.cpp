@@ -32,6 +32,9 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
     if(gridSize % 2 != 0)
         gridSize += 1; // Gridsize must be even for adjacent Tile calculations
 
+    if(gridSize % 2 != 0)
+        gridSize += 1; // Gridsize must be even for adjacent Tile calculations
+
 
     ///  Setup Cameras
     sf::View camera;
@@ -118,6 +121,9 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
     /// Game loop
     while (app.isOpen())
     {
+
+        handleEvents(app, hexs, HUD, townWindow, window, player, gridSize, camera, hudView, towns, daySpeed, buildings, textures, buildingMenu, resources, goods, mainFont, paused);
+
         ///Update HUD & camera
         HUD.update(player, date);
         update_view(app, camera, hudView, hexs, window, HUD, player, townWindow, AIBoats, buildingMenu, tradeDealsWindow);
@@ -146,6 +152,8 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
         }
 
         handleEvents(app, hexs, HUD, townWindow, window, player, gridSize, camera, hudView, towns, daySpeed, buildings, textures, buildingMenu, resources, goods, mainFont, paused); /// Handle Events when paused
+
+
 
     } /// End of Main Loop
 
