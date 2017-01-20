@@ -35,7 +35,7 @@ std::vector<resourceClass> loadResources(std::vector<terrainClass> &terrains)
                 line.erase(0, line.find(", ") + 2);
                 newResource.spawnChance = atoi(token.c_str());
 
-                auto n = std::count(line.begin(), line.end(), '|');
+                int n = std::count(line.begin(), line.end(), '|');
                 for(n;n>=0;n--)
                 {
                     token = line.substr(0, line.find("|"));
@@ -55,6 +55,11 @@ std::vector<resourceClass> loadResources(std::vector<terrainClass> &terrains)
     {
         printf("Failed to Load resources.txt!\n");
     }
+
+    for(auto &r : resources)
+        printf("%s    ", r.name.c_str());
+
+    printf("\n");
 
     return resources;
 

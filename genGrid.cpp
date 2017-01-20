@@ -1,20 +1,21 @@
 #include "custom.h"
 #include <iostream>
 
-void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &camera, std::vector<nationClass> &nations, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats, std::vector<int> &edgeTiles, std::vector<goodClass> &goods)
+void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &camera, std::vector<std::shared_ptr<nationClass> > &nations, std::vector<resourceClass> &resources, std::vector<textureClass> &textures, std::vector<townClass> &towns, std::vector<AIBoat> &AIBoats, std::vector<int> &edgeTiles, std::vector<goodClass> &goods, sf::RenderWindow &app)
 {
 
-/*******************************************Config Values****************************************************************/
+/*********************************************Config Values****************************************************************/
 
     int jungleChance = 3;
     int landChance = 5;
     int sandChance = 65;
     int mountainChance = 10;
     int townChance = 30;
+    int minTowns = 13;
+    int maxTowns = 13;
 
-/************************************************************************************************************************/
 
-/********************************************Generating hex grid*********************************************************/
+/*********************************************Generating hex grid*********************************************************/
     int jumpCounter = 0;
     int index = 0;
 
@@ -29,12 +30,12 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
         for (int i = 0; i<gridSize; i++)
             {
                 hexagon hexagon;
-                if((n % 2) == 0) // every other y
-                    hexagon.hex.setPosition(i*43.75*200 + 43.75*100, n*38*200);
+                if((n % 2) == 0) /// every other y
+                    hexagon.hex.setPosition(i*hexagon.hex.getLocalBounds().width + hexagon.hex.getLocalBounds().width/2, n*hexagon.hex.getLocalBounds().height*.75);
                 else
-                    hexagon.hex.setPosition(i*43.75*200, n*38*200); // 43.75 is 25*1.75     |   40 is 25*1.6
+                    hexagon.hex.setPosition(i*hexagon.hex.getLocalBounds().width, n*hexagon.hex.getLocalBounds().height*.75);
 
-                hexagon.resource.icon.setPosition(hexagon.hex.getPosition().x + 10*200, hexagon.hex.getPosition().y + 10*200);
+                hexagon.resourceIcon.setPosition(hexagon.hex.getPosition().x, hexagon.hex.getPosition().y);
                 hexagon.ownerHex.setPosition(hexagon.hex.getPosition().x, hexagon.hex.getPosition().y);
                 hexagon.x += (i + jumpCounter);
                 hexagon.y = gridSize - n;
@@ -56,7 +57,7 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
 
 /**********************************Generate initial land*****************************************************************/
 
-        srand(seed);  // Seed the random number generator
+        srand(seed);  /// Seed the random number generator
 
         for (auto &tile : hexs)
         {
@@ -73,12 +74,13 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
             if (randNum <= tempLandChance)
             {
                 tile.terrain = land;
-                tile.hex.setFillColor(sf::Color::Green);
+
                 tile.movementPoints = 1;
 
             }
 
         }
+
 
 /************************************************************************************************************************/
 
@@ -95,7 +97,7 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
 
                 for (auto &adjTile : tile.adjacentTiles(hexs, gridSize))
                 {
-                    switch (adjTile->terrain)
+                    switch (adjTile->terrain.terrain)
                     {
                         case sea:
                             adjSea++;
@@ -123,34 +125,32 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
                 }
 
 
-                if(tile.terrain != land && adjLand > 1 && randNum <= sandChance)    //Gen Sand
+                if(tile.terrain.terrain != land && adjLand > 1 && randNum <= sandChance)    //Gen Sand
                     {
-                        if (adjSand > 1)    //if sand > 1 thick; then Sand -> Land
+                        if (adjSand > 1)    ///if sand > 1 thick; then Sand -> Land
                         {
                             tile.terrain = land;
-                            tile.hex.setFillColor(sf::Color::Green);
                             tile.movementPoints = 1;
                         }
-                        else // Make SAND BABIES
+                        else /// Place Sand
                         {
                             tile.terrain = sand;
-                            tile.hex.setFillColor(sf::Color::Yellow);
                             tile.movementPoints = 2;
                         }
 
                     }
 
                     if (adjSea > 4)
-                        {
-                            //std::cout << "Chipping away!" << std::endl;
-                            tile.terrain = sea;
-                            tile.hex.setFillColor(sf::Color::Blue);
-                            tile.movementPoints = 3;
-                        }
+                    {
+                        tile.terrain = sea;
+                        tile.movementPoints = 3;
+                    }
 
 
 
             }
+
+
 /************************************************************************************************************************/
 
 /********************************************Place JUNGLE/MOUNTAIN/LAKE**************************************************/
@@ -164,7 +164,6 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
                     if (randNum <= jungleChance && TC.adjSea != 6)
                     {
                         tile.terrain = jungle;
-                        tile.hex.setFillColor(sf::Color(50, 200, 50));
                         tile.movementPoints = 3;
                     }
 
@@ -173,10 +172,10 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
                     if (randNum <= mountainChance && TC.adjSea < 1)
                     {
                         tile.terrain = mountain;
-                        tile.hex.setFillColor(sf::Color(0, 0, 0));
                         tile.movementPoints = 4;
                     }
             }
+
 
 /// LAKE CHECK
             for (auto &tile : hexs)
@@ -185,7 +184,6 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
                     if(TC.adjSea < 1 && tile.terrain == sea)
                     {
                         tile.terrain = lake;
-                        tile.hex.setFillColor(sf::Color(0, 200, 255));
                         tile.movementPoints = 1;
                     }
                     else if(TC.adjSea < 3 && tile.terrain == sea)
@@ -205,13 +203,11 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
                         if(canLake)
                         {
                             tile.terrain = lake;
-                            tile.hex.setFillColor(sf::Color(0, 200, 255));
                             for(auto &t : tile.adjacentTiles(hexs, gridSize))
                             {
                                 if(t->terrain == sea)
                                 {
                                     t->terrain = lake;
-                                    t->hex.setFillColor(sf::Color(0, 200, 255));
                                 }
                             }
                         }
@@ -229,10 +225,10 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
                             if(t->terrain == sea)
                             {
                                 t->terrain = sand;
-                                t->hex.setFillColor(sf::Color::Yellow);
                             }
                         }
                 }
+
 
 /************************************************************************************************************************/
 
@@ -249,10 +245,7 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
 
                                 if(randNum < resourceThing.spawnChance)
                                 {
-                                    tile.resource.name = resourceThing.name;
-                                    tile.resource.textureName = resourceThing.textureName;
-                                    tile.resource.food = resourceThing.food;
-                                    tile.resource.production = resourceThing.production;
+                                    tile.resource = resourceThing;
                                 }
                             }
                         }
@@ -260,12 +253,11 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
                     for (auto &texture : textures)
                     {
                         if(texture.name == tile.resource.textureName)
-                            tile.resource.icon.setTexture(&texture);
+                            tile.resourceIcon.setTexture(&texture);
                     }
 
                 }
             }
-
 
 /************************************************************************************************************************/
 
@@ -273,10 +265,21 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
 
 
 
-                while(towns.size() < 1)
+                std::vector<std::shared_ptr<colonialNation> > colNations;
+                for(std::shared_ptr<nationClass> &nation : nations)
+                {
+                    std::shared_ptr<colonialNation> nationPtr = std::dynamic_pointer_cast<colonialNation>(nation);
+                    if(nationPtr)   /// if downcast successful then push onto colonial nations
+                        colNations.push_back(nationPtr);
+                }
+
+                while(towns.size() < minTowns)
                 {
                     for (auto &tile : hexs)
                     {
+                        if(maxTowns != 0 && towns.size() >= maxTowns)
+                            break;
+
                         int adjResource = 0;
 
                         for (auto &adjTile : tile.adjacentTiles(hexs, gridSize))
@@ -292,22 +295,21 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
                         if(tile.terrain == land && TC.adjLand > 0 && randNum <= townChance && TC.adjTown == 0 && TC.adjSea > 0 && tile.resource.name == "none" && adjResource > 1)
                         {
                             tile.terrain = town;
-                            tile.hex.setFillColor(sf::Color::White);
                             tile.movementPoints = 1;
-                            randNum = rand() % nations.size() + 0;
+                            randNum = rand() % colNations.size() + 0;
 
-                            tile.owner = nations.at(randNum).name;
-                            tile.ownerHex.setFillColor(nations.at(randNum).colour);
-
+                            tile.owner = colNations.at(randNum)->name;
+                            tile.ownerHex.setFillColor(colNations.at(randNum)->colour);
+/*
                             for(auto &adj : tile.adjacentTiles(hexs, gridSize))
                             {
                                 adj->owner = nations.at(randNum).name;
                                 adj->ownerHex.setFillColor(nations.at(randNum).colour);
                             }
-
-
+*/
                             std::vector<hexagon*> adjTiles = tile.adjacentTiles(hexs, gridSize);
-                            townClass newTown(&hexs.at(tile.index), adjTiles, hexs, gridSize, goods);
+                            std::shared_ptr<colonialNation> nation = colNations.at(randNum);
+                            townClass newTown(&hexs.at(tile.index), adjTiles, hexs, gridSize, goods, nation.get());
                             newTown.setTownName(towns);
                             towns.push_back(newTown);
                             hexs.at(tile.index).townOnTile = &towns.back();
@@ -318,6 +320,15 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
 
 
 
+            for(auto &t : textures)
+            {
+                for(auto &hex : hexs)
+                {
+                    if(t.name == std::string(hex.terrain.name + std::string("Texture"))) /// Terrain type: sea | resolves to "seaTexture"
+                        hex.hex.setTexture(&t);
+                }
+            }
+
 /************************************************************************************************************************/
 
 /****************************************Print tiles*********************************************************************/
@@ -327,7 +338,7 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
 ///TERRAIN
                 std::vector<Terrain> terrains;
                 for(auto &t : hexs)
-                    terrains.push_back(t.terrain);
+                    terrains.push_back(t.terrain.terrain);
 
                 int seaCount = std::count(terrains.begin(), terrains.end(), sea);
                 int landCount = std::count(terrains.begin(), terrains.end(), land);
@@ -345,7 +356,7 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
                         resourceSpawns.push_back(t.resource.name);
                 printf("%s\n%sRESOURCES%s\n%s\n", std::string(50, '*').c_str(), std::string(3, '\t').c_str(), std::string(3, '\t').c_str(), std::string(50, '*').c_str());
                 for(auto &r : resources)
-                    printf("%s - %i\n", r.name.c_str(), std::count(resourceSpawns.begin(), resourceSpawns.end(), r.name));
+                    printf("%s - %i\n", r.name.c_str(), static_cast<int>(std::count(resourceSpawns.begin(), resourceSpawns.end(), r.name)));
 
 
 ///TOWNS
@@ -355,7 +366,7 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
                         townSpawns.push_back(t.owner);
                 printf("%s\n%sTOWNS%s\n%s\n", std::string(50, '*').c_str(), std::string(3, '\t').c_str(), std::string(3, '\t').c_str(), std::string(50, '*').c_str());
                 for(auto &n : nations)
-                    printf("%s - %i\n", n.name.c_str(), std::count(townSpawns.begin(), townSpawns.end(), n.name));
+                    printf("%s - %i\n", n->name.c_str(), static_cast<int>(std::count(townSpawns.begin(), townSpawns.end(), n->name)));
 
                 printf("Total - %i\n", static_cast<int>(townSpawns.size()));
 

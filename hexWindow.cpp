@@ -9,7 +9,7 @@ hexWindow::hexWindow(hexagon* hexagon, sf::View &hud, sf::Font &font)
     this->rect.setPosition(-490, 200);
     this->rect.setFillColor(sf::Color(10, 10, 10, 128));
 
-    this->infoStr = std::string("X: ") + std::to_string(hexagon->x) + std::string("\nY: ") + std::to_string(hexagon->y) + std::string("\nZ: ") + std::to_string(hexagon->z) + std::string("\nResource: ") + hexagon->resource.name + std::string("\nFood: ") + std::to_string(hexagon->resource.food);
+    this->infoStr = std::string("X: ") + std::to_string(hexagon->x) + std::string("\nY: ") + std::to_string(hexagon->y) + std::string("\nZ: ") + std::to_string(hexagon->z) + std::string("\nResource: ") + hexagon->resource.name + std::string("\nFood: ") + std::to_string(hexagon->resource.food) + std::string("\nTerrain: ") + std::to_string(hexagon->terrain.terrain);
 
     this->infoText = sf::Text(infoStr, font);
     this->infoText.setPosition(-490, 200);
@@ -27,5 +27,5 @@ hexWindow::~hexWindow()
 
 std::string hexWindow::genString()
 {
-    return std::string("Owner: ") + this->hex->owner + std::string("\nX: ") + std::to_string(this->hex->x) + std::string("\nY: ") + std::to_string(this->hex->y) + std::string("\nZ: ") + std::to_string(this->hex->z) + std::string("\nResource: ") + this->hex->resource.name + std::string("\nFood: ") + std::to_string(this->hex->resource.food) + std::string("\nProduction: ") + std::to_string(this->hex->resource.production);
+    return std::string("Owner: ") + this->hex->owner + std::string("\nX: ") + std::to_string(this->hex->x) + std::string("\nY: ") + std::to_string(this->hex->y) + std::string("\nZ: ") + std::to_string(this->hex->z) + std::string("\nResource: ") + this->hex->resource.name + std::string("\nFood: ") + std::to_string(this->hex->resource.food) + std::string("\nProduction: ") + std::to_string(this->hex->resource.production) + std::string("\nTerrain: ") + std::to_string(this->hex->terrain.terrain);
 }

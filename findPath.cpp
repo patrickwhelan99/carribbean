@@ -84,7 +84,7 @@ std::vector<hexagon*> findPath(pathParameters params)
 
             if(!inVector(closedVec, adj)) /// If not already evaluated (in closed list)
             {
-                if(!inVector(openVec, adj) && (adj->terrain == sea || adj->terrain == town)) /// If not already queued to be evalued (in open list) then add
+                if(!inVector(openVec, adj) && (adj->terrain.terrain == sea || adj->terrain.terrain == town)) /// If not already queued to be evalued (in open list) then add
                     openVec.push_back(adj);
 
                 int tentativeGScore = currentTile->g + currentTile->distanceTo(adj);

@@ -3,18 +3,18 @@
 #include <iostream>
 #include <cmath>
 
-std::vector<std::vector<hexagon*> > initPathGen(std::vector<hexagon*> towns, std::vector<hexagon> hexs, int gridSize, std::vector<int> &edgeTiles, unsigned threads)
+#ifdef __linux__
+std::vector<std::vector<hexagon*> > initPathGen(std::vector<hexagon*> towns, std::vector<hexagon> hexs, int gridSize, std::vector<int> &edgeTiles, unsigned threads, double* percentageCharted)
 {
     int pathsInt = static_cast<int>(towns.size());
     printf("Generating %i Paths!\n.... could take a while\n...... go and get a drink? Go outside? Go and visit your grandma? Go on holiday?\n", pathsInt*pathsInt - pathsInt);
-    double percentageCharted = 0;
     std::vector< std::vector<hexagon*> > townPaths;
     std::vector<std::future< std::vector<hexagon*> > > path;
     pathParameters ppArray[static_cast<int>(towns.size()*towns.size()-towns.size())];
     int n = 0;
     int t = 0;
 
-    printf("Stage 1/3:\n"); /// Generate Half of the paths
+    //printf("Stage 1/3:\n"); /// Generate Half of the paths
     for(auto &town1 : towns)
     {
         n=0;
@@ -39,25 +39,25 @@ std::vector<std::vector<hexagon*> > initPathGen(std::vector<hexagon*> towns, std
             }
         }
 
-        percentageCharted += ((float)1/pathsInt)*100;
-        std::cout << ceil(percentageCharted) << "%\n";
+        *(percentageCharted) += ((float)1/pathsInt)*100;
+        //std::cout << ceil(*(percentageCharted)) << "%\n";
         t++;
     }
 
-    percentageCharted = 0;
+    *(percentageCharted) = 0;
 
-    printf("Stage 2/3:\n"); /// Gather all the futures!
+    //printf("Stage 2/3:\n"); /// Gather all the futures!
     for(auto &i : path)
     {
         townPaths.push_back(i.get());
-        percentageCharted += (float)100*((float)1/(float)path.size());
-        std::cout << ceil(percentageCharted) << "%\n";
+        *(percentageCharted) += (float)100*((float)1/(float)path.size());
+        //std::cout << ceil(*(percentageCharted)) << "%\n";
     }
 
 
-    printf("Stage 3/3:\n"); /// Copy and reverse 1st half of paths to get 2nd half
+    //printf("Stage 3/3:\n"); /// Copy and reverse 1st half of paths to get 2nd half
     t = 0;
-    percentageCharted = 0;
+    *(percentageCharted) = 0;
     for(auto &town1 : towns)
     {
         int p = 0;
@@ -82,10 +82,45 @@ std::vector<std::vector<hexagon*> > initPathGen(std::vector<hexagon*> towns, std
             }
             p++;
         }
-        percentageCharted += (float)100/(float)(pathsInt);
-        printf("%f\%\n", ceil(percentageCharted));
+        *(percentageCharted) += (float)100/(float)(pathsInt);
+        //printf("%f\%\n", ceil(*(percentageCharted)));
         t++;
     }
 
     return townPaths;
 }
+#endif
+
+#ifdef __MINGW32__
+std::vector<std::vector<hexagon*> > initPathGen(std::vector<hexagon*> towns, std::vector<hexagon> hexs, int gridSize, std::vector<int> &edgeTiles, unsigned threads, double* percentageCharted)
+{
+    int pathsInt = static_cast<int>(towns.size());
+    printf("Generating %i Paths!\n.... could take a while\n...... go and get a drink? Go outside? Go and visit your grandma? Go on holiday?\n", pathsInt*pathsInt - pathsInt);
+    std::vector< std::vector<hexagon*> > townPaths;
+    std::vector<std::future< std::vector<hexagon*> > > path;
+    pathParameters ppArray[static_cast<int>(towns.size()*towns.size()-towns.size())];
+
+    //printf("Stage 1/3:\n"); /// Generate Half of the paths
+    for(auto &town1 : towns)
+    {
+        for(auto &town2 : towns)
+        {
+            if(town1 && town2)
+            {
+                if(town1->index!=town2->index)
+                {
+                        hexagon* a = town1;
+                        hexagon* b = town2;
+                        pathParameters p(a, b, hexs, gridSize);
+                        findPath(p);
+                }
+            }
+        }
+
+        *(percentageCharted) += ((float)1/pathsInt)*100;
+        std::cout << ceil(*(percentageCharted)) << "%\n";
+    }
+
+    return townPaths;
+}
+#endif

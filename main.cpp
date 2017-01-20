@@ -3,7 +3,7 @@
 int main(int argc, char* argv[])
 {
     /// Create the main window
-    sf::RenderWindow app(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Carribbean");//, sf::Style::Fullscreen);
+    sf::RenderWindow app(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Carribbean", sf::Style::None);
     /// Gather available threads
     unsigned threads = std::thread::hardware_concurrency();
     if(threads==0){threads=1;} // 0 Returned if # of threads undetectable, in such a case future code is unusable so threads must be set
@@ -16,19 +16,6 @@ int main(int argc, char* argv[])
 
 int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &playerName, unsigned &threads)
 {
-/*
-	/// Setup initial gridSize
-    int gridSize=50; //100 default reduced for testing
-    int seed=time(NULL); // default seed for rand, gets current time unless overridden by arg
-    std::string playerName;
-
-    if(argc > 1)
-        gridSize = atoi(argv[1]);
-    if(argc > 2)
-        seed = atoi(argv[2]);
-    if(argc > 3)
-        playerName = argv[3];
-*/
     if(gridSize % 2 != 0)
         gridSize += 1; // Gridsize must be even for adjacent Tile calculations
 
@@ -42,11 +29,24 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
     sf::Font mainFont;
     cameraInit(camera, hudView, app, mainFont, gridSize);
 
+    double percentageCharted = 0;
+
+#ifdef __linux__
+    sf::Context context;
+
+    bool finished = false;
+
+    loadingScreenParams loadingParams(camera, &app, &finished, &percentageCharted);
+
+    /// Setup Simple Loading Screen
+    std::future<int> loadingInt = std::async(std::launch::async, loadingScreen, std::ref(loadingParams));
+#endif // __linux__
+
     /// Load Terrain Types
     std::vector<terrainClass> terrains = loadTerrains();
 
     ///  Load nations, textures, resources & goods using *.txt files
-    std::vector<nationClass> nations = loadNations();
+    std::vector<std::shared_ptr<nationClass> > nations = loadNations();
     if(nations.size() == 0)
         app.close();
     std::vector<textureClass> textures = loadTextures();
@@ -62,6 +62,14 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
     if(buildings.size() == 0)
         app.close();
 
+    /// Setup alpha textures
+    std::vector<sf::Texture> alphaTextures;
+    for(int i=0; i<4; i++)
+    {
+        sf::Texture alphaTexture;
+        alphaTexture.loadFromFile(std::string("alpha_" + std::to_string(i) + ".png"));
+        alphaTextures.push_back(alphaTexture);
+    }
 
 ///  Generate the grid
         //  Setup timer
@@ -73,8 +81,12 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
     std::vector<hexagon> hexs;
     std::vector<townClass> towns;
     std::vector<AIBoat> AIBoats;
+    std::vector<unit> units;
     std::vector<int> edgeTiles;
-    genGrid(hexs, gridSize, seed, camera, nations, resources, textures, towns, AIBoats, edgeTiles, goods);
+    genGrid(hexs, gridSize, seed, camera, nations, resources, textures, towns, AIBoats, edgeTiles, goods, app);
+
+    for(auto &hex : hexs)
+        hex.setupTris(alphaTextures);
 
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
     std::cout << "Generation Time: "<< duration/4 << "s\n" << std::endl;
@@ -86,7 +98,7 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
 
     /// Populate tile list and generate paths
     std::vector<hexagon*> townTiles = popTownTiles(towns, hexs, edgeTiles);
-    std::vector<std::vector<hexagon*> > townPaths = initPathGen(townTiles, hexs, gridSize, edgeTiles, threads);
+    std::vector<std::vector<hexagon*> > townPaths = initPathGen(townTiles, hexs, gridSize, edgeTiles, threads, &percentageCharted);
 
     duration = (( std::clock() - start ) / (double) CLOCKS_PER_SEC)/4;
     std::cout << "Charting Time: "<< duration/4 << "s\n" << std::endl;
@@ -97,7 +109,9 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
 
     ///Setup Player
     sf::Texture playerTexture;
-    playerTexture.loadFromFile("tobacco.png");
+    for(auto &t : textures)
+        if(t.name == "playerTexture")
+            playerTexture = t;
     playerClass player(playerTexture, hexs, playerName, towns, goods);
 
     /// Setup HUD & windows
@@ -111,47 +125,71 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
 
     /// Setup Date & Time System
     Date date;
-    double daySpeed = 1; // days last for x sec(s)
+    double daySpeed = 0.00001; // days last for x sec(s)
     /// Start game clock
     start = std::clock();
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
     bool paused = false;
 
+#ifdef __linux__
+    finished = true;
+    loadingInt.get();
+#endif // __linux__
+
+    /// Setup shaders
+    sf::Shader landBlendShader;
+    if(!landBlendShader.loadFromFile("landBlendShader.frag", sf::Shader::Fragment))
+        std::cerr << "Failed to load shader: landBlendShader!" << std::endl;
+
+    for(auto &nation : nations)
+    {
+        if(nation->name != "Portugal")
+            nation->atWarWithName = "Portugal";
+        else
+            nation->atWarWithName = "England";
+    }
+
     /// Game loop
     while (app.isOpen())
     {
 
-        handleEvents(app, hexs, HUD, townWindow, window, player, gridSize, camera, hudView, towns, daySpeed, buildings, textures, buildingMenu, resources, goods, mainFont, paused);
+        handleEvents(app, hexs, HUD, townWindow, window, player, gridSize, camera, hudView, towns, daySpeed, buildings, textures, buildingMenu, resources, goods, mainFont, paused, AIBoats, units, nations);
 
-        ///Update HUD & camera
-        HUD.update(player, date);
-        update_view(app, camera, hudView, hexs, window, HUD, player, townWindow, AIBoats, buildingMenu, tradeDealsWindow);
-
-        bool monthTick = false;
-        bool yearTick = false;
-
-        duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
-        if(duration >= daySpeed) /// every daytick (a second)
+        if(!paused)
         {
-            daytick(HUD, AIBoats, townPaths, date, monthTick, yearTick, player, towns, goods);
-            duration = 0;
-            start = std::clock();
+            ///Update HUD & camera
+            HUD.update(player, date);
+            update_view(app, camera, hudView, hexs, window, HUD, player, townWindow, AIBoats, buildingMenu, tradeDealsWindow, terrains, landBlendShader, units);
+
+            bool monthTick = false;
+            bool yearTick = false;
+
+            duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
+            if(duration >= daySpeed) /// every daytick (a second)
+            {
+                daytick(HUD, AIBoats, townPaths, date, monthTick, yearTick, player, towns, goods, hexs, gridSize, nations);
+                duration = 0;
+                start = std::clock();
+
+                for(auto &newUnit : units)
+                    printf("Unit at:\t{%i, %i, %i}\n", newUnit.tileOccupying->x, newUnit.tileOccupying->y, newUnit.tileOccupying->z);
+            }
+
+
+            if(monthTick)
+            {
+                monthtick(towns, goods, townPaths, AIBoats, textures, hexs, nations);
+            }
+
+
+            if(yearTick)
+            {
+                yeartick();
+            }
         }
 
-
-        if(monthTick)
-        {
-            monthtick(towns, hexs, resources, goods, townPaths);
-        }
-
-
-        if(yearTick)
-        {
-            yeartick();
-        }
-
-        handleEvents(app, hexs, HUD, townWindow, window, player, gridSize, camera, hudView, towns, daySpeed, buildings, textures, buildingMenu, resources, goods, mainFont, paused); /// Handle Events when paused
+        handleEvents(app, hexs, HUD, townWindow, window, player, gridSize, camera, hudView, towns, daySpeed, buildings, textures, buildingMenu, resources, goods, mainFont, paused, AIBoats, units, nations); /// Handle Events when paused
 
 
 

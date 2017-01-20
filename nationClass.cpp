@@ -5,4 +5,5 @@ nationClass::nationClass(std::string name, std::string possessive, sf::Color col
     this->name = name;
     this->possessive = possessive;
     this->colour = colour;
+    this->money = 0;
 }

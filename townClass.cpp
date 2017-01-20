@@ -1,8 +1,9 @@
 #include "custom.h"
 #include <fstream>
 
-townClass::townClass(hexagon* tile, std::vector<hexagon*> &adjTiles, std::vector<hexagon> &hexs, int gridSize, std::vector<goodClass> &goods)
+townClass::townClass(hexagon* tile, std::vector<hexagon*> &adjTiles, std::vector<hexagon> &hexs, int gridSize, std::vector<goodClass> &goods, nationClass* nation)
 {
+    this->nation = nation;
     this->income = 2;
     this->expenditure = 0;
     this->population = 100;
@@ -68,6 +69,11 @@ void townClass::setTownName(std::vector<townClass> &towns)
 
 }
 
+std::string townClass::getTownName(void)
+{
+    return this->name;
+}
+
 void townClass::monthTick(std::vector<hexagon> &hexs)
 {
             this->population += (this->food-(this->population/100))*5;
@@ -75,6 +81,9 @@ void townClass::monthTick(std::vector<hexagon> &hexs)
                 this->manPower += this->population/12;
             if(this->manPower > this->population/7)
                 this->manPower = this->population/7;
+
+/*
+/// NATURAL GROWTH
 
             if(floor(this->population/100) > this->townSize)
             {
@@ -93,9 +102,10 @@ void townClass::monthTick(std::vector<hexagon> &hexs)
                     }
                 }
             }
+*/
 }
 
-void townClass::generateTradeDeals(std::vector<goodClass> &goods, std::vector<std::vector<hexagon*> > &townPaths)
+void townClass::generateTradeDeals(std::vector<goodClass> &goods, std::vector<std::vector<hexagon*> > &townPaths, std::vector<AIBoat> &AIBoats, std::vector<textureClass> &textures, std::vector<hexagon> &hexs, std::vector<townClass> &towns)
 {
     this->openDeals = std::vector<tradeDealClass>();
 
@@ -111,11 +121,11 @@ void townClass::generateTradeDeals(std::vector<goodClass> &goods, std::vector<st
 
                     if(tp.size() > 1)
                     {/*
-                        if(tp.back()->townOnTile != nullptr)
+                        if(tp.back()->townOnTile != nullptr && tp.back() != tp.front())
                             tradeName = g.name + std::string(" from ") + this->name + std::string(" to ") + std::string(tp.back()->townOnTile->name);
                         else
-                            tradeName = g.name + std::string(" from ") + this->name + std::string(" to unknown");
-                    */}
+                     */       tradeName = g.name + std::string(" from ") + this->name + std::string(" to unknown");
+                    }
 
                     float tradeVolMultiplier = float(rand() % 5 + 20) / float(1000);
                     float tradeVolume = tradeVolMultiplier*g.stdNum;
@@ -127,6 +137,7 @@ void townClass::generateTradeDeals(std::vector<goodClass> &goods, std::vector<st
                     double tradePrice = double(g.price) * double(priceMultiplier) * double(tradeVolume);
 
                     tradeDealClass newTradeDeal(tradeName, g, tradeVolume, tradePrice, tradeFreq);
+                    newTradeDeal.path = tp;
                     this->openDeals.push_back(newTradeDeal);
                 }
             }
@@ -135,7 +146,65 @@ void townClass::generateTradeDeals(std::vector<goodClass> &goods, std::vector<st
 
     std::random_shuffle(this->openDeals.begin(), this->openDeals.end());
     this->openDeals.erase(this->openDeals.begin()+3, this->openDeals.end());
-    printf("\n\n%s\n%s\n", this->name.c_str(), std::string(50, '*').c_str());
-    for(auto &od : this->openDeals)
-        printf("%s\t%f\tfor\t%i %s\n", od.name.c_str(), od.payment, static_cast<int>(od.tradeGoodVolume), od.tradeGood.unit.c_str());
+
+    for(auto &d : this->openDeals)
+    {
+        for(auto &t : textures)
+        {
+            if(t.name == "boatTexture")
+            {
+                AIBoat newBoat(t, hexs, townPaths, towns, goods);
+                newBoat.name = "tradeBoat";
+                for(auto &g : newBoat.inventory)
+                {
+                    if(g.name == d.tradeGood.name)
+                    {
+                        g.num = d.tradeGoodVolume;  /// Add goods for trade deal to ship's inventory
+                    }
+                }
+
+                newBoat.currentPath = d.path;
+                newBoat.currentHex = newBoat.currentPath.front();
+                newBoat.nation = this->nation;
+                newBoat.td = &d;
+                AIBoats.push_back(newBoat);
+            }
+        }
+    }
+}
+
+bool townClass::isBesieged(std::vector<hexagon> &hexs, int &gridSize)
+{
+    for(hexagon* &hex : this->tile->adjacentTiles(hexs, gridSize))
+    {
+        if(hex->unitsOnTile.size() <= 0)
+        {
+            return false;
+        }
+    }
+
+    /// Check if units on adjacent tiles are military units belonging to warring nation
+    for(hexagon* &hex : this->tile->adjacentTiles(hexs, gridSize))
+    {
+        bool tileContainsEnemyMilitaryUnit = true;
+
+        for(unit* &unitOnTile : hex->unitsOnTile)
+        {
+            if(unitOnTile->owner->name == this->nation->atWarWithName)
+            {
+                militaryUnit *besiegingUnit = dynamic_cast<militaryUnit*>(unitOnTile); /// Downcast to militaryUnit
+                if(besiegingUnit) /// check if downcast was successful, implicit check for nullptr; equivilent is: if(besiegingUnit != nullptr)
+                {
+                    tileContainsEnemyMilitaryUnit = false;
+                    break;
+                }
+            }
+        }
+
+        if(!tileContainsEnemyMilitaryUnit)
+            return false;
+    }
+
+    // If town is completely encompassed by enemy military units
+    return true;
 }

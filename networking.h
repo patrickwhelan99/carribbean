@@ -1,8 +1,12 @@
 #ifndef NETWORKING_H_INCLUDED
 #define NETWORKING_H_INCLUDED
 
-#include <glob.h>
 
+
+#ifdef __GNUC__
+#ifdef __linux__
+
+#include <glob.h>
 
 inline std::string genImageName()
 {
@@ -14,15 +18,17 @@ inline std::string genImageName()
 	std::cout << "Number of files: " << cnt << std::endl;
 	return std::string("image_") + std::to_string(static_cast<int>(cnt));
 };
+#endif
+#endif
 
+#ifdef __MINGW32__
 
-/*
 inline std::string genImageName()
 {
 	int a = rand() % 9999999 + 0;
 	return std::string("image_") + std::to_string(a);
 };
-*/
+#endif // __MINGW32__
 
 class world
 {

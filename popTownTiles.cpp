@@ -9,7 +9,7 @@ std::vector<hexagon*> popTownTiles(std::vector<townClass> &towns, std::vector<he
 
     for(auto &i : edgeTiles)
     {
-        if(hexs.at(i).terrain != sea)
+        if(hexs.at(i).terrain.terrain != sea)
         {
             edgeTiles.erase(std::remove(edgeTiles.begin(), edgeTiles.end(), i), edgeTiles.end());
         }

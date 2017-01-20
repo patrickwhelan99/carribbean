@@ -1,4 +1,5 @@
-England, english, 255|0|50
-France, french, 0|255|255
-Portugal, portugeese, 25|100|25
-Spain, spanish, 255|255|50
+col, England, english, englandFlagTexture.png, 255|0|50
+col, France, french, franceFlagTexture.png, 0|255|255
+col, Portugal, portugeese, portugalFlagTexture.png, 25|100|25
+col, Spain, spanish, spainFlagTexture.png, 255|255|50
+tri, Iroquis, Iroqui's, IroquiFlagTexture.png, 160|105|50

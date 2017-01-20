@@ -6,11 +6,12 @@ shipClass::shipClass(std::vector<hexagon> &hexs, std::vector<townClass> &towns, 
     this->currentHex = nullptr;
     int randNum = rand() % towns.size() + 0;
     hexagon* spawnTile = towns.at(randNum).tile;
-    this->setPosition(spawnTile->resource.icon.getPosition());
+    this->currentHex = spawnTile;
+    this->setPosition(this->currentHex->resourceIcon.getPosition().x - this->currentHex->hex.getLocalBounds().width/4, this->currentHex->resourceIcon.getPosition().y - this->currentHex->hex.getLocalBounds().height/4);
     this->x = spawnTile->x;
     this->y = spawnTile->y;
     this->z = spawnTile->z;
-    this->currentHex = spawnTile;
+    this->firingRange = 0;
     this->currentPath = std::vector<hexagon*>();
 
     for(auto &g : goods)
@@ -33,7 +34,7 @@ void shipClass::moveNext(void)
         this->x = this->currentHex->x;
         this->y = this->currentHex->y;
         this->z = this->currentHex->z;
-        this->setPosition(this->currentHex->resource.icon.getPosition());
+        this->setPosition(this->currentHex->resourceIcon.getPosition().x - this->currentHex->hex.getLocalBounds().width/4, this->currentHex->resourceIcon.getPosition().y - this->currentHex->hex.getLocalBounds().height/4);
         std::reverse(this->currentPath.begin(), this->currentPath.end());
             this->currentPath.pop_back();
         std::reverse(this->currentPath.begin(), this->currentPath.end());

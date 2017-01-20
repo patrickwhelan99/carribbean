@@ -30,8 +30,8 @@ int gameSetup(sf::RenderWindow &app, sf::View &menuView, unsigned &threads)
 	bool gridSizeInputBoxActive = false;
 	bool seedInputBoxActive = false;
 
-	std::string gridSizeStr;
-	std::string seedStr;
+	std::string gridSizeStr = "50";
+	std::string seedStr = std::to_string(time(NULL));
 
 	sf::Font menuFont;
 	menuFont.loadFromFile("DroidSans.ttf");
@@ -84,7 +84,10 @@ int gameSetup(sf::RenderWindow &app, sf::View &menuView, unsigned &threads)
 		sf::Event event;
 		while (app.pollEvent(event))
 		{
-            if(event.type == sf::Event::MouseButtonPressed);
+            if(event.type == sf::Event::Closed)
+                app.close();
+
+            if(event.type == sf::Event::MouseButtonPressed)
             {
 
                 //if LMB Pressed

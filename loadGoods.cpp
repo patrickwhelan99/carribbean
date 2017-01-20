@@ -49,14 +49,15 @@ std::vector<goodClass> loadGoods(std::vector<resourceClass> &resources)
 
                     ///Last Token is required materials to make good
                     token = line.substr(0, line.find("/n"));
-                    line.erase(0, line.find("/n") + 1);
-                    auto n = std::count(line.begin(), line.end(), '|');
+                    //line.erase(0, line.find("/n") + 1);
+                    int n = std::count(line.begin(), line.end(), '|');
                     for(n;n>=0;n--)
                     {
                         token = line.substr(0, line.find("="));
                         line.erase(0, line.find("=") + 1);
                         bool isResource = false;
                         for(auto &r : resources)
+                        {
                             if(token == r.name)
                             {
                                 resourceClass resource = r;
@@ -67,15 +68,21 @@ std::vector<goodClass> loadGoods(std::vector<resourceClass> &resources)
                                 isResource = true;
                                 break;
                             }
-
+                        }
                             if(!isResource)
                                 printf("ERROR: Loading Good: %s:\t%s is not a resource!\n", newGood.name.c_str(), token.c_str());
+
                     }
 
                 if (newGood.name != "none")
                     goods.push_back(newGood);
+                }
             }
-            }
+
+            for(auto &g : goods)
+                    printf("%s    ", g.name.c_str());
+
+            printf("\n");
     }
     else
     {

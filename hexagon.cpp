@@ -4,13 +4,17 @@
 
 hexagon::hexagon()
 {
-    this->hex = sf::CircleShape(25*200, 6);
-    this->hex.setFillColor(sf::Color::Blue);
-    this->ownerHex = sf::CircleShape(25*200, 6);
-    this->ownerHex.setFillColor(sf::Color(255, 255, 255));
-    this->terrain = sea;
+    this->hex = sf::CircleShape(5000, 6);
+    this->hex.setOrigin(5000, 5000);
+    this->hex.scale(sf::Vector2f(1.2, 1.2));
+    this->hex.setFillColor(sf::Color(200, 200, 200, 255));
+    this->ownerHex = sf::CircleShape(5000, 6);
+    this->ownerHex.setOrigin(5000, 5000);
+    //this->ownerHex.setFillColor(sf::Color(255, 255, 255));
+    //this->terrain = sea;
     this->owner = "noOne";
-    this->resourceIcon = sf::CircleShape(15*200, 6);
+    this->resourceIcon = sf::CircleShape(2000, 6);
+    this->resourceIcon.setOrigin(1000, 1000);
     this->x = 0;
     this->y = 0;
     this->z = 0;
@@ -100,7 +104,7 @@ adjTileCounter hexagon::countAdjacentTiles(std::vector<hexagon> &hexs, int gridS
 
     for(auto &adjTile : this->adjacentTiles(hexs, gridSize))
     {
-        switch (adjTile->terrain)
+        switch (adjTile->terrain.terrain)
         {
             case sea:
                 adjSea++;
@@ -170,5 +174,16 @@ std::vector<hexagon*> hexagon::adjacentTilesByCoords(std::vector<hexagon> &hexs,
     }
 
     return adjHexs;
+}
+
+
+void hexagon::setupTris(std::vector<sf::Texture> &alphaTextures)
+{
+    int radius = 3500;
+    for(int i=0;i<6;i++)
+    {
+        int rotation = 30+i*60;
+        triangle newTriangle(alphaTextures, radius, 3, this, rotation);
+    }
 }
 

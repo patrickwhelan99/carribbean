@@ -2,16 +2,16 @@
 #include <future>
 
 
-void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, hudClass &HUD, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources, std::vector<goodClass> &goods, sf::Font &font, bool &paused)
+void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, hudClass &HUD, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources, std::vector<goodClass> &goods, sf::Font &font, bool &paused, std::vector<AIBoat> &AIBoats, std::vector<unit> &units, std::vector<std::shared_ptr<nationClass> > &nations)
 {
     sf::Event event;
         while (app.pollEvent(event))
         {
             // Close window : exit
-            if (event.type == sf::Event::Closed)
+            if(event.type == sf::Event::Closed)
                 app.close();
 
-            if (event.type == sf::Event::KeyReleased)
+            if(event.type == sf::Event::KeyReleased)
             {
                 if(event.key.code == sf::Keyboard::Escape)
                 {
@@ -28,10 +28,45 @@ void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, hudClass &H
                     camera.rotate(45);
                 }
 
-                if (event.key.code == sf::Keyboard::F1)
+                if(event.key.code == sf::Keyboard::F1)
                 {
                     sf::Image Screen = app.capture();
                     Screen.saveToFile("screenshot.jpg");
+                }
+
+                if(event.key.code == sf::Keyboard::Return)
+                {
+                    std::vector<AIBoat> sameTileBoats;
+
+                    for(auto &b : AIBoats)
+                        if(b.currentHex->index == player.currentHex->index)
+                            sameTileBoats.push_back(b);
+
+                    if(sameTileBoats.size() > 0)
+                        initiateCombat(app, camera, player, sameTileBoats);
+                }
+
+                if(event.key.code == sf::Keyboard::Tab)
+                {
+                    for(std::shared_ptr<nationClass> &nation : nations)
+                    {
+                        //if(!nation.atWarWithName.size() != 0)
+                        //{
+                            for(townClass &town : towns)
+                            {
+                                printf("nation:\t%s\tnationAtWarWith:\t%s\ttown's nation:\t%s\n", nation->name.c_str(), nation->atWarWithName.c_str(), town.nation->name.c_str());
+                                if(town.nation->name == nation->atWarWithName)
+                                {
+                                    for(hexagon* &hex : town.tile->adjacentTiles(hexs, gridSize))
+                                    {
+                                        auto a = nation.get();
+                                        militaryLandUnit newUnit(a, 1, hex, textures.at(5));
+                                        units.push_back(newUnit);
+                                    }
+                                }
+                            }
+                        //}
+                    }
                 }
 
             }
@@ -105,7 +140,7 @@ void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, hudClass &H
 
                     if(townWindow.displayBuildingMenu && buildingMenu.next.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
                     {
-                        if(buildingMenu.index == buildings.size()-1)
+                        if(buildingMenu.index == static_cast<int>(buildings.size()-1))
                             buildingMenu.index = 0;
                         else
                             buildingMenu.index +=1;

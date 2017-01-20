@@ -4,43 +4,29 @@ std::vector<terrainClass> loadTerrains(void)
 {
     std::vector<terrainClass> terrains;
 
-    terrainClass newTerrain(sea, std::string("sea"), 3);
-    terrains.push_back(newTerrain);
+    terrainClass noneObj(none, std::string("none"), 3);
+    terrains.push_back(noneObj);
 
-    newTerrain.terrain = land;
-    newTerrain.name = std::string("land");
-    newTerrain.movementPoints = 1;
-    terrains.push_back(newTerrain);
+    terrainClass seaObj(sea, std::string("sea"), 1);
+    terrains.push_back(seaObj);
 
-    newTerrain.terrain = sand;
-    newTerrain.name = std::string("sand");
-    newTerrain.movementPoints = 2;
-    terrains.push_back(newTerrain);
+    terrainClass lakeObj(lake, std::string("lake"), 1);
+    terrains.push_back(lakeObj);
 
-    newTerrain.terrain = lake;
-    newTerrain.name = std::string("lake");
-    newTerrain.movementPoints = 1;
-    terrains.push_back(newTerrain);
+    terrainClass sandObj(sand, std::string("sand"), 3);
+    terrains.push_back(sandObj);
 
-    newTerrain.terrain = jungle;
-    newTerrain.name = std::string("jungle");
-    newTerrain.movementPoints = 3;
-    terrains.push_back(newTerrain);
+    terrainClass landObj(land, std::string("land"), 2);
+    terrains.push_back(landObj);
 
-    newTerrain.terrain = mountain;
-    newTerrain.name = std::string("mountain");
-    newTerrain.movementPoints = 3;
-    terrains.push_back(newTerrain);
+    terrainClass jungleObj(jungle, std::string("jungle"), 3);
+    terrains.push_back(jungleObj);
 
-    newTerrain.terrain = town;
-    newTerrain.name = std::string("town");
-    newTerrain.movementPoints = 1;
-    terrains.push_back(newTerrain);
+    terrainClass townObj(town, std::string("town"), 1);
+    terrains.push_back(townObj);
 
-    newTerrain.terrain = none;
-    newTerrain.name = std::string("none");
-    newTerrain.movementPoints = 1;
-    terrains.push_back(newTerrain);
+    terrainClass mountainObj(mountain, std::string("mountain"), 3);
+    terrains.push_back(mountainObj);
 
     return terrains;
 }

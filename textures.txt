@@ -1,3 +1,11 @@
+seaTexture, sea.png
+landTexture, land.png
+mountainTexture, mountain.png
+sandTexture, sand.png
+jungleTexture, jungle.png
+townTexture, town.png
+lakeTexture, lake.png
+playerTexture, player.png
 cocaTexture, coca.png
 fishTexture, fish.png
 cattleTexture, cattle.png
@@ -16,4 +24,5 @@ incomeTexture, income.png
 woodTexture, wood.png
 yeastTexture, yeast.png
 tradeDealButtonTexture, tdb.png
-
+buildingMenuButtonTexture, tdb.png
+unitMenuButtonTexture, tdb.png

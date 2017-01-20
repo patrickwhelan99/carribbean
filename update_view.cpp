@@ -1,7 +1,7 @@
 #include "custom.h"
 #include <iostream>
 
-void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, playerClass &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats, buildingMenuClass buildingMenu, tradeDealsWindowClass &tradeDealWindow)
+void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, playerClass &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats, buildingMenuClass buildingMenu, tradeDealsWindowClass &tradeDealWindow, std::vector<terrainClass> &terrains, sf::Shader &landBlendShader, std::vector<unit> &units)
 {
             if(app.hasFocus())
             {
@@ -52,19 +52,48 @@ void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std
 
 
         app.clear();
-        for (auto const &hex: hexs)
-        {
-            app.draw(hex.hex);
-            if(hex.resource.name != "none")
-            {
-                app.draw(hex.resource.icon);
-            }
 
-            if(hex.owner != "noOne")
+        /*
+            Terrain Draw Order
+            0 - None
+            1 - Sea
+            2 - Lake
+            3 - Sand
+            4 - Land
+            5 - Jungle
+            6 - Town
+            7 - Mountain
+                            */
+
+        for(auto &t : terrains)
+        {
+            for (hexagon const &hex: hexs)
             {
-                app.draw(hex.ownerHex);
+                if(hex.terrain.terrain == t.terrain)
+                {
+                    //app.draw(hex.hex);
+                    for(auto &t : hex.triangles)
+                    {
+                        landBlendShader.setParameter("diffuseTexture", *t.diffuseTexture);
+                        landBlendShader.setParameter("alphaTexture", *t.alphaTexture);
+                        app.draw(t, &landBlendShader);
+                    }
+
+                    if(hex.resource.name != "none")
+                    {
+                        app.draw(hex.resourceIcon);
+                    }
+
+                    if(hex.owner != "noOne")
+                    {
+                        app.draw(hex.ownerHex);
+                    }
+                }
             }
         }
+
+    for(auto &unit : units)
+        app.draw(unit);
 
     app.draw(player);
 
@@ -122,7 +151,7 @@ void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std
             app.draw(tradeDealWindow.window);
             int from = tradeDealWindow.index * 16;
             int remainder = 16;
-            if(from + remainder > tradeDealWindow.deals.size())
+            if(from + remainder > static_cast<int>(tradeDealWindow.deals.size()))
                 remainder = tradeDealWindow.deals.size()-1 - from;
 
 

@@ -23,9 +23,13 @@ int mainMenu(sf::RenderWindow &app, unsigned &threads)
     quitButton.setFillColor(sf::Color(230, 10, 10));
 
 	sf::Texture backgroundTexture;
-	backgroundTexture.loadFromFile("fish.png");
+	srand(time(NULL));
+	int randNum = rand() % 2 + 0;
+	backgroundTexture.loadFromFile(std::string("menu/image_") + std::to_string(randNum) + std::string(".png"));
 	sf::RectangleShape backgroundImage;
-	backgroundImage.setSize(sf::Vector2f(1000, 1000));
+	backgroundImage.setSize(menuView.getSize());
+	backgroundImage.setOrigin(menuView.getSize().x/2, menuView.getSize().y/2);
+	backgroundImage.setPosition(menuView.getCenter());
 	backgroundImage.setTexture(&backgroundTexture);
 
 
@@ -44,7 +48,10 @@ int mainMenu(sf::RenderWindow &app, unsigned &threads)
 		sf::Event event;
 		while (app.pollEvent(event))
 		{
-		if (event.type == sf::Event::MouseButtonPressed)
+            if(event.type == sf::Event::Closed)
+                app.close();
+
+            if (event.type == sf::Event::MouseButtonPressed)
             {
                 //if LMB Pressed
                 if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -68,4 +75,6 @@ int mainMenu(sf::RenderWindow &app, unsigned &threads)
 			}
         }
 	}
+
+	return 0;
 }

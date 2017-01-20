@@ -1,13 +1,14 @@
 #include "custom.h"
 #include <random>
 
-void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vector<hexagon*> > &townPaths, Date &date, bool &monthTick, bool &yearTick, playerClass &player, std::vector<townClass> &towns, std::vector<goodClass> &goods)
+void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vector<hexagon*> > &townPaths, Date &date, bool &monthTick, bool &yearTick, playerClass &player, std::vector<townClass> &towns, std::vector<goodClass> &goods, std::vector<hexagon> &hexs, int &gridSize, std::vector<std::shared_ptr<nationClass> > &nations)
 {
     ///Update Hud info
     HUD.dateStr = date.update(monthTick, yearTick);
 
     ///Move Player
     player.moveNext();
+
 
     ///Move AI Boats
     for(auto &boat : AIBoats)
@@ -16,6 +17,13 @@ void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vecto
 
         while(boat.currentPath.size() == 0)
         {
+            if(boat.name == "tradeBoat")
+            {
+                boat.destroy = true;
+                boat.nation->money += boat.td->payment;
+                break;
+            }
+
             int randnum = rand() % ((townPaths.size()) + 0);
             if(townPaths.at(randnum).at(0)->index == boat.currentHex->index)
             {
@@ -24,6 +32,8 @@ void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vecto
             }
         }
     }
+
+    AIBoats.erase(std::remove_if(AIBoats.begin(), AIBoats.end(), shouldDestroy), AIBoats.end());
 
 
 ///Add daily production of goods to towns total
@@ -78,4 +88,22 @@ void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vecto
             }
 
         }
+
+    for(townClass &town : towns)
+    {
+        if(town.isBesieged(hexs, gridSize))
+        {
+            for(std::shared_ptr<nationClass> &nation : nations)
+            {
+                if(nation->name == town.nation->atWarWithName)
+                {
+                    printf("%s has besieged %s!\n", nation->name.c_str(), town.getTownName().c_str());
+                    town.nation = nation.get();
+                    town.tile->owner = nation->name;
+                    town.tile->ownerHex.setFillColor(nation->colour);
+                }
+            }
+        }
+    }
+
 }
