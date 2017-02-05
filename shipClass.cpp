@@ -11,7 +11,10 @@ shipClass::shipClass(std::vector<hexagon> &hexs, std::vector<townClass> &towns, 
     this->x = spawnTile->x;
     this->y = spawnTile->y;
     this->z = spawnTile->z;
+    this->health = 1.0f;
     this->firingRange = 0;
+    this->reloadTime = 2.0f;
+    this->currentReloadTime = 0.0f;
     this->currentPath = std::vector<hexagon*>();
 
     for(auto &g : goods)

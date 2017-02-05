@@ -208,3 +208,4 @@ bool townClass::isBesieged(std::vector<hexagon> &hexs, int &gridSize)
     // If town is completely encompassed by enemy military units
     return true;
 }
+

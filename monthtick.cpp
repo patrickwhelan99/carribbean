@@ -1,11 +1,16 @@
 #include "custom.h"
 
-void monthtick(std::vector<townClass> &towns, std::vector<goodClass> &goods, std::vector<std::vector<hexagon*> > &townPaths, std::vector<AIBoat> &AIBoats, std::vector<textureClass> &textures, std::vector<hexagon> &hexs, std::vector<std::shared_ptr<nationClass> > &nations)
+void monthtick(std::vector<townClass> &towns, std::vector<goodClass> &goods, std::vector<std::vector<hexagon*> > &townPaths, std::vector<AIBoat> &AIBoats, std::vector<textureClass> &textures, std::vector<hexagon> &hexs, std::vector<std::shared_ptr<nationClass> > &nations, std::vector<buildingClass> &buildings, std::vector<resourceClass> &resources)
 {
     for(auto &town : towns)
         {
             town.monthTick(hexs);
             town.generateTradeDeals(goods, townPaths, AIBoats, textures, hexs, towns);
+
+            for(buildingClass &b : buildings)
+            {
+                buildBuilding(b, resources, goods, &town);
+            }
         }
 
     for(auto &n : nations)

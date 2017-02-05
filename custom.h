@@ -172,14 +172,19 @@ class tradeDealClass
 
 class townClass
 {
-    friend townWindow;
-    friend buildingMenuClass;
-    friend tradeDealsWindowClass;
-
     public:
         nationClass* nation;
         hexagon* tile;
         int income;
+        int expenditure;
+        int townSize;
+        int garrison;
+        int population;
+        int food;
+        int production;
+        int manPower;
+        std::string name;
+        std::vector<tradeDealClass> openDeals;
         std::vector<hexagon*> ownedTiles;
         std::vector<goodClass> goods;
         std::vector<buildingClass> buildings;
@@ -191,18 +196,6 @@ class townClass
         void monthTick(std::vector<hexagon> &hexs);
         void generateTradeDeals(std::vector<goodClass> &goods, std::vector<std::vector<hexagon*> > &townPaths, std::vector<AIBoat> &AIBoats, std::vector<textureClass> &textures, std::vector<hexagon> &hexs, std::vector<townClass> &towns);
         bool isBesieged(std::vector<hexagon> &hexs, int &gridSize);
-
-    private:
-        std::string name;
-        int expenditure;
-        int townSize;
-        int garrison;
-        int population;
-        int food;
-        int production;
-        int manPower;
-        std::vector<tradeDealClass> openDeals;
-
 };
 
 class adjTileCounter
@@ -381,10 +374,16 @@ class shipClass : public sf::Sprite
         int x;
         int y;
         int z;
+
         int speed;
         int movementPoints;
+
+        float health;
         direction shipDirection;
         int firingRange;
+        float reloadTime;
+        float currentReloadTime;
+
         std::vector<goodClass> inventory;
 
         shipClass(std::vector<hexagon> &hexs, std::vector<townClass> &towns, std::vector<goodClass> &goods);
@@ -404,20 +403,27 @@ class playerClass : public shipClass
             this->speed = 3;
         };
         void setPath(hexagon &tile, std::vector<hexagon> &hexs, int &gridSize);
+        void fireCannons(const bool &isIntersecting, AIBoat &enemyShip);
 };
 
 class AIBoat : public shipClass
 {
     public:
-        bool destroy = false;
+        bool destroy;
+        bool inactive;
         nationClass* nation;
         tradeDealClass* td;
+        sf::Vector2f battleMovement;
 
         AIBoat(sf::Texture &texture, std::vector<hexagon> &hexs, std::vector< std::vector<hexagon*> > &townPaths, std::vector<townClass> &towns, std::vector<goodClass> &goods) : shipClass(hexs, towns, goods)
         {   this->setScale(10, 10);
             this->setTexture(texture);
             this->name = "Boaty McBoatFace";
             this->speed = rand() % 5 + 2;
+            this->destroy = false;
+            this->inactive = false;
+            this->battleMovement = sf::Vector2f(-0.005f, -0.005f);
+
             if(this->speed <= 0)
                 printf("%i\n", this->speed);
 
@@ -427,7 +433,7 @@ class AIBoat : public shipClass
         };
 };
 
-inline bool shouldDestroy(const AIBoat & o)
+inline bool shouldDestroy(const AIBoat &o)
 {
     return o.destroy;
 };
@@ -609,7 +615,10 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
     std::vector<std::vector<hexagon*> > initPathGen(std::vector<hexagon*> towns, std::vector<hexagon> hexs, int gridSize, std::vector<int> &edgeTiles, unsigned threads, double* percentageCharted);
     ///AIBoats
     void spawnBoats(std::vector<textureClass> &textures, std::vector<AIBoat> &AIBoats, std::vector<hexagon> &hexs, std::vector<std::vector<hexagon*> > &townPaths, std::vector<townClass> &towns, std::vector<goodClass> &goods);
-
+    void endBattle(playerClass &player, std::vector<AIBoat> &AIBoats, const bool &playerVictory);
+    void AIBattleLoop(std::vector<AIBoat> &AIBoats, playerClass &player, std::vector<sf::RectangleShape> &nodes, sf::FloatRect &intersectionRect, std::clock_t &start);
+    ///AI Towns
+    void buildBuilding(buildingClass &building, std::vector<resourceClass> &resources, std::vector<goodClass> &goods, townClass* currentTown);
 ///EventHandler
 void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, hudClass &HUD, townWindow &townWindow, hexWindow &window, playerClass &player, int gridSize, sf::View &camera, sf::View &hudView, std::vector<townClass> &towns, int daySpeed, std::vector<buildingClass> &buildings, std::vector<textureClass> &textures, buildingMenuClass &buildingMenu, std::vector<resourceClass> &resources, std::vector<goodClass> &goods, sf::Font &font, bool &paused, std::vector<AIBoat> &AIBoats, std::vector<unit> &units, std::vector<std::shared_ptr<nationClass> > &nations);
 
@@ -617,7 +626,7 @@ void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, hudClass &H
 void update_view(sf::RenderWindow &app, sf::View &camera, sf::View &hudView, std::vector<hexagon> &hexs, hexWindow &window, hudClass &HUD, playerClass &player, townWindow &townWindow, std::vector<AIBoat> &AIBoats, buildingMenuClass buildingMenu, tradeDealsWindowClass &tradeDealWindow, std::vector<terrainClass> &terrains, sf::Shader &landBlendShader, std::vector<unit> &units);
 ///Time Handling
 void daytick(hudClass &HUD, std::vector<AIBoat> &AIBoats, std::vector<std::vector<hexagon*> > &townPaths, Date &date, bool &monthTick, bool &yearTick, playerClass &player, std::vector<townClass> &towns, std::vector<goodClass> &goods, std::vector<hexagon> &hexs, int &gridSize, std::vector<std::shared_ptr<nationClass> > &nations);
-void monthtick(std::vector<townClass> &towns, std::vector<goodClass> &goods, std::vector<std::vector<hexagon*> > &townPaths, std::vector<AIBoat> &AIBoats, std::vector<textureClass> &textures, std::vector<hexagon> &hexs, std::vector<std::shared_ptr<nationClass> > &nations);
+void monthtick(std::vector<townClass> &towns, std::vector<goodClass> &goods, std::vector<std::vector<hexagon*> > &townPaths, std::vector<AIBoat> &AIBoats, std::vector<textureClass> &textures, std::vector<hexagon> &hexs, std::vector<std::shared_ptr<nationClass> > &nations, std::vector<buildingClass> &buildings, std::vector<resourceClass> &resources);
 void yeartick(void);
 ///Path finding
 std::vector<hexagon*> findPath(pathParameters params);
@@ -625,6 +634,6 @@ bool compHexs(const hexagon* a, const hexagon* b);
 bool inVector(std::vector<hexagon*> vec, hexagon* adj);
 
 
-bool initiateCombat(sf::RenderWindow &app, sf::View camera, playerClass player, std::vector<AIBoat> AIBoats);
+bool initiateCombat(sf::RenderWindow &app, sf::View camera, playerClass &player, std::vector<AIBoat> &AIBoats);
 
 #endif // CUSTOM_H_INCLUDED

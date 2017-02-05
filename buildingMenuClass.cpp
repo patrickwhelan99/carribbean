@@ -194,3 +194,20 @@ void buildingMenuClass::buildBuilding(std::vector<buildingClass> &buildings, std
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

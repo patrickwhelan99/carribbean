@@ -125,7 +125,7 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
 
     /// Setup Date & Time System
     Date date;
-    double daySpeed = 0.00001; // days last for x sec(s)
+    double daySpeed = .1; // days last for x sec(s)
     /// Start game clock
     start = std::clock();
     duration = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
@@ -179,7 +179,7 @@ int gameMain(sf::RenderWindow &app, int &gridSize, uint32_t &seed, std::string &
 
             if(monthTick)
             {
-                monthtick(towns, goods, townPaths, AIBoats, textures, hexs, nations);
+                monthtick(towns, goods, townPaths, AIBoats, textures, hexs, nations, buildings, resources);
             }
 
 

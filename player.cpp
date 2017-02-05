@@ -9,3 +9,17 @@ void playerClass::setPath(hexagon &tile, std::vector<hexagon> &hexs, int &gridSi
     this->currentPath = findPath(p);
 }
 
+void playerClass::fireCannons(const bool &isIntersecting, AIBoat &enemyShip)
+{
+    if(!isIntersecting)
+        return;
+
+    this->currentReloadTime = this->reloadTime;
+    float randDmg = float(rand()%75+25)/float(100);
+    enemyShip.health -= randDmg;
+    if(enemyShip.health <= 0.0f)
+    {
+        enemyShip.inactive = true;
+    }
+}
+

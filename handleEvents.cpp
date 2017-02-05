@@ -149,7 +149,7 @@ void handleEvents(sf::RenderWindow &app, std::vector<hexagon> &hexs, hudClass &H
                         break;
                     }
 
-                    if(townWindow.displayBuildingMenu && buildingMenu.buildButton.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())))
+                    if(townWindow.displayBuildingMenu && buildingMenu.buildButton.getGlobalBounds().contains(app.mapPixelToCoords(sf::Mouse::getPosition())) && townWindow.currentTown->nation->name = "player")
                     {
                         buildingMenu.buildBuilding(buildings, resources, towns, goods);
                     }

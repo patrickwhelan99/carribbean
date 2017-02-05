@@ -11,8 +11,8 @@ void genGrid(std::vector<hexagon> &hexs, int gridSize, uint32_t seed, sf::View &
     int sandChance = 65;
     int mountainChance = 10;
     int townChance = 30;
-    int minTowns = 13;
-    int maxTowns = 13;
+    int minTowns = 2;
+    int maxTowns = 2;
 
 
 /*********************************************Generating hex grid*********************************************************/

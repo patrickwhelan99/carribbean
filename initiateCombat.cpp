@@ -1,13 +1,34 @@
 #include "custom.h"
 
-bool initiateCombat(sf::RenderWindow &app, sf::View camera, playerClass player, std::vector<AIBoat> AIBoats)
+bool initiateCombat(sf::RenderWindow &app, sf::View camera, playerClass &player, std::vector<AIBoat> &AIBoats)
 {
     camera.setSize(1000, 1000);
     camera.setCenter(500, 500);
     app.setView(camera);
 
+    sf::FloatRect intersectionRect;
+    intersectionRect.top = 0;
+    intersectionRect.left = 0;
+    intersectionRect.height = 1000;
+    intersectionRect.width = 1000;
+    printf("%f, %f\n", intersectionRect.top, intersectionRect.left);
+
     sf::Vector2f mapSize(camera.getSize().x, camera.getSize().y);
-    printf("%f, %f\n", mapSize.x, mapSize.y);
+    //printf("%f, %f\n", mapSize.x, mapSize.y);
+
+    ///setup pathing nodes
+    std::vector<sf::RectangleShape> nodes;
+    for(int i=0; i<100; i++)
+    {
+        for(int j=0; j<100; j++)
+        {
+            sf::RectangleShape node(sf::Vector2f(1, 1));
+            node.setPosition(i*10, j*10);
+            node.setFillColor(sf::Color::Red);
+            nodes.push_back(node);
+        }
+    }
+
 
     if(AIBoats.size() < 1)
         return -1;
@@ -30,8 +51,14 @@ bool initiateCombat(sf::RenderWindow &app, sf::View camera, playerClass player, 
         i++;
     }
 
+    std::clock_t start = std::clock();
+
     while(app.isOpen())
     {
+
+        AIBattleLoop(AIBoats, player, nodes, intersectionRect, start);
+
+
         sf::Event event;
         while(app.pollEvent(event))
         {
@@ -63,6 +90,16 @@ bool initiateCombat(sf::RenderWindow &app, sf::View camera, playerClass player, 
                 if(event.key.code == sf::Keyboard::E)
                 {
                     player.firingRange += 100;
+                }
+                if(event.key.code == sf::Keyboard::Return)
+                {
+                    for(AIBoat &b : AIBoats)
+                    {
+                        if(rangeFinder.getGlobalBounds().intersects(b.getGlobalBounds()))
+                            player.fireCannons(true, b);
+                        else
+                            player.fireCannons(false, b);
+                    }
                 }
             }
         }
@@ -97,12 +134,37 @@ bool initiateCombat(sf::RenderWindow &app, sf::View camera, playerClass player, 
                 rangeFinder.setFillColor(sf::Color::Red);
             }
 
+        bool allDead = true;
+        for(AIBoat &b : AIBoats)
+        {
+            if(!b.inactive)
+                allDead = false;
+        }
+
+        if(allDead)
+        {
+            endBattle(player, AIBoats, true);
+            break;
+        }
+        if(player.health <= 0.0f)
+        {
+            endBattle(player, AIBoats, false);
+        }
+
+
         /// Rendering
         app.clear();
 
+        //for(auto &n : nodes)
+            //app.draw(n);
+
         app.draw(player);
         for(auto &b : AIBoats)
-            app.draw(b);
+            if(!b.inactive)
+                app.draw(b);
+
+
+
         app.draw(rangeFinder);
         app.display();
     }
