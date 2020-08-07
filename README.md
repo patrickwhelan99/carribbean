@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/static/v1?label=Made%20With&message=C%2B%2B&color=informational"/>
 <p/>
 
-<img src="https://github.com/patrickwhelan99/CircleThingy/blob/master/docs/media/example.png?raw=true" width="50%" height="50%" />
+<img src="https://raw.githubusercontent.com/patrickwhelan99/carribbean/master/docs/media/example.png" width="100%" height="100%" />
 
 ## Requirements
 #### g++
